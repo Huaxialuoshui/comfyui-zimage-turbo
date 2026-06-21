@@ -27,6 +27,26 @@ COMFYUI_REPO_PATH = "comfyanonymous/ComfyUI.git"
 COMFYUI_MANAGER_REPO_PATH = "ltdrdata/ComfyUI-Manager.git"
 
 # QwenVL 节点仓库 (多个备选)
+
+# Qwen LLM / VL models for ComfyUI-QwenVL nodes
+QWEN_MODELS = {
+    "Qwen3-0.6B": {
+        "repo_id": "Qwen/Qwen3-0.6B",
+        "target_dir": "LLM/Qwen-VL",
+        "desc": "Qwen3 0.6B 纯文本 - 用于 PromptEnhancer 提示词扩写",
+    },
+    "Qwen2-VL-2B-Instruct": {
+        "repo_id": "Qwen/Qwen2-VL-2B-Instruct",
+        "target_dir": "LLM/Qwen-VL",
+        "desc": "Qwen2-VL 2B - 用于 pose_transform 姿态分析",
+    },
+    "Qwen3-VL-4B-Instruct": {
+        "repo_id": "Qwen/Qwen3-VL-4B-Instruct",
+        "target_dir": "LLM/Qwen-VL",
+        "desc": "Qwen3-VL 4B - 用于 analyze_gen 和 iterative_refine 智能分析",
+    },
+}
+
 QWENVL_REPOS = [
     "1038lab/ComfyUI-QwenVL.git",         # 785 stars, 最活跃
     "alexcong/ComfyUI_QwenVL.git",        # 144 stars (注意下划线)
@@ -224,73 +244,106 @@ def install_qwenvl_node():
 
 
 def download_zimage_model(variant="bf16"):
-    """Download Z-Image Turbo from Comfy-Org (split format)"""
+    """Download Z-Image Turbo with resume support and retry logic."""
+    import time, hashlib
+    from huggingface_hub import hf_hub_download, HfHubHTTPError
+
     model_files = ZIMAGE_FILES.get(variant, ZIMAGE_FILES["bf16"])
-    
+    all_files = dict(**model_files["files"], **ZIMAGE_COMMON_FILES)
+
     print(f"\n[5/5] Download Z-Image Turbo ({variant.upper()})...")
     print(f"  [i] {model_files['desc']}")
     print(f"  [i] Repo: {ZIMAGE_REPO}")
-    print(f"  [i] Format: ComfyUI split_files (diffusion_model + text_encoder + VAE)")
-    print(f"  [!] Total ~10-15GB, please wait...")
-    
-    from huggingface_hub import hf_hub_download
-    
+    total_gb = sum(26 if "diffusion" in k else 4 if "text_encoder" in k else 0.3 for k in all_files)
+    print(f"  [i] Total ~{total_gb:.0f}GB (supports resume if interrupted)")
+    print()
+
+    # Track completed downloads
+    done_marker = MODELS_DIR / ".zimage_download_done.txt"
+    completed = set()
+    if done_marker.exists():
+        completed = set(done_marker.read_text("utf-8").strip().split("\n"))
+
     all_ok = True
-    
-    for local_name, remote_name in model_files["files"].items():
+
+    for local_name, remote_name in all_files.items():
+        marker_key = local_name
+
+        if marker_key in completed:
+            local_path = MODELS_DIR / local_name
+            if local_path.exists() and local_path.stat().st_size > 1024:
+                sz = local_path.stat().st_size / (1024**3)
+                print(f"  [OK] Already downloaded: {local_name} ({sz:.1f}GB)")
+                continue
+            else:
+                completed.discard(marker_key)
+
         local_path = MODELS_DIR / local_name
-        if local_path.exists():
-            sz = local_path.stat().st_size / (1024**3)
-            print(f"  [OK] Exists: {local_name} ({sz:.1f}GB)")
-            continue
         local_path.parent.mkdir(parents=True, exist_ok=True)
-        print(f"  [>>] {remote_name}")
-        try:
-            hf_hub_download(repo_id=ZIMAGE_REPO, filename=remote_name, local_dir=str(MODELS_DIR), local_dir_use_symlinks=False)
-            # Move from split_files/ to correct dir if needed
-            import shutil as _shutil
-            split_path = MODELS_DIR / remote_name
-            target_path = MODELS_DIR / local_name
-            if split_path.exists() and split_path != target_path:
-                target_path.parent.mkdir(parents=True, exist_ok=True)
-                _shutil.move(str(split_path), str(target_path))
-                # Clean empty split_files dirs
-                for _d in [MODELS_DIR / 'split_files' / 'diffusion_models', MODELS_DIR / 'split_files' / 'text_encoders', MODELS_DIR / 'split_files' / 'vae', MODELS_DIR / 'split_files']:
-                    try: _d.rmdir()
-                    except: pass
-            print(f"  [OK] Done: {local_name}")
-        except Exception as e:
-            print(f"  [FAIL] {e}")
-            all_ok = False
-    
-    for local_name, remote_name in ZIMAGE_COMMON_FILES.items():
-        local_path = MODELS_DIR / local_name
+
+        # Backup partial file before retry
         if local_path.exists():
-            sz = local_path.stat().st_size / (1024**3)
-            print(f"  [OK] Exists: {local_name} ({sz:.1f}GB)")
-            continue
-        local_path.parent.mkdir(parents=True, exist_ok=True)
-        print(f"  [>>] {remote_name}")
-        try:
-            hf_hub_download(repo_id=ZIMAGE_REPO, filename=remote_name, local_dir=str(MODELS_DIR), local_dir_use_symlinks=False)
-            # Move from split_files/ to correct dir if needed
-            import shutil as _shutil
-            split_path = MODELS_DIR / remote_name
-            target_path = MODELS_DIR / local_name
-            if split_path.exists() and split_path != target_path:
-                target_path.parent.mkdir(parents=True, exist_ok=True)
-                _shutil.move(str(split_path), str(target_path))
-                # Clean empty split_files dirs
-                for _d in [MODELS_DIR / 'split_files' / 'diffusion_models', MODELS_DIR / 'split_files' / 'text_encoders', MODELS_DIR / 'split_files' / 'vae', MODELS_DIR / 'split_files']:
-                    try: _d.rmdir()
-                    except: pass
-            print(f"  [OK] Done: {local_name}")
-        except Exception as e:
-            print(f"  [FAIL] {e}")
+            partial_sz = local_path.stat().st_size
+            if partial_sz > 1024:
+                print(f"  [..] Found partial download ({partial_sz/1024**3:.1f}GB), will resume...")
+            else:
+                local_path.unlink(missing_ok=True)
+
+        max_retries = 3
+        success = False
+        for attempt in range(1, max_retries + 1):
+            if attempt > 1:
+                wait = attempt * 10
+                print(f"  [..] Retry {attempt}/{max_retries} in {wait}s...")
+                time.sleep(wait)
+
+            print(f"  [>>] ({attempt}/{max_retries}) {remote_name}")
+            try:
+                hf_hub_download(
+                    repo_id=ZIMAGE_REPO,
+                    filename=remote_name,
+                    local_dir=str(MODELS_DIR),
+                    etag_timeout=30,
+                )
+                # Move from split_files/ to correct dir
+                import shutil as _shutil
+                split_path = MODELS_DIR / remote_name
+                target_path = MODELS_DIR / local_name
+                if split_path.exists() and split_path != target_path:
+                    target_path.parent.mkdir(parents=True, exist_ok=True)
+                    _shutil.move(str(split_path), str(target_path))
+                    for _d in [MODELS_DIR / "split_files" / "diffusion_models",
+                               MODELS_DIR / "split_files" / "text_encoders",
+                               MODELS_DIR / "split_files" / "vae",
+                               MODELS_DIR / "split_files"]:
+                        try: _d.rmdir()
+                        except: pass
+
+                if target_path.exists() and target_path.stat().st_size > 1024:
+                    sz = target_path.stat().st_size / (1024**3)
+                    print(f"  [OK] Done: {local_name} ({sz:.1f}GB)")
+                    completed.add(marker_key)
+                    done_marker.write_text("\n".join(sorted(completed)), "utf-8")
+                    success = True
+                    break
+                else:
+                    print(f"  [!] File incomplete after download, retrying...")
+            except HfHubHTTPError as e:
+                print(f"  [!] HTTP Error: {e}")
+            except (OSError, ConnectionError, TimeoutError) as e:
+                print(f"  [!] Network Error: {e}")
+            except Exception as e:
+                print(f"  [!] Error: {e}")
+
+        if not success:
             all_ok = False
-    
-    if not all_ok:
-        print(f"\n[!] Manual download: https://huggingface.co/{ZIMAGE_REPO}")
+            print(f"  [FAIL] {local_name} after {max_retries} attempts")
+            print(f"         Manual: https://huggingface.co/{ZIMAGE_REPO}/blob/main/{remote_name}")
+
+    if all_ok:
+        print(f"\n  [OK] All {len(all_files)} files downloaded!")
+    else:
+        print(f"\n  [!] Some files failed. Re-run setup to continue from where you left off.")
     return all_ok
 
 def setup_model_config():
@@ -509,6 +562,55 @@ def print_banner(text, style="double"):
     print(bot)
 
 
+
+def download_qwen_models():
+    """Download Qwen LLM/VL models with resume support."""
+    from huggingface_hub import snapshot_download
+    import time
+
+    print(f"\n--- Download Qwen LLM/VL Models ---")
+    all_ok = True
+
+    for name, cfg in QWEN_MODELS.items():
+        target = MODELS_DIR / cfg["target_dir"] / name
+        if target.exists() and any(target.iterdir()):
+            total = sum(f.stat().st_size for f in target.rglob("*") if f.is_file()) / 1e9
+            print(f"  [OK] {name}: already exists ({total:.1f}GB)")
+            continue
+
+        print(f"  [>>] {name} - {cfg['desc']}")
+        print(f"       Repo: {cfg['repo_id']}")
+        target.mkdir(parents=True, exist_ok=True)
+
+        max_retries = 3
+        success = False
+        for attempt in range(1, max_retries + 1):
+            if attempt > 1:
+                wait = attempt * 10
+                print(f"  [..] Retry {attempt}/{max_retries} in {wait}s...")
+                time.sleep(wait)
+            try:
+                snapshot_download(
+                    repo_id=cfg["repo_id"],
+                    local_dir=str(target),
+                    etag_timeout=30,
+                )
+                total = sum(f.stat().st_size for f in target.rglob("*") if f.is_file()) / 1e9
+                print(f"  [OK] {name} ({total:.1f}GB)")
+                success = True
+                break
+            except Exception as e:
+                print(f"  [!] {type(e).__name__}: {e}")
+
+        if not success:
+            all_ok = False
+            print(f"  [FAIL] {name}")
+            print(f"         Run setup again to resume or download manually from: https://huggingface.co/{cfg['repo_id']}")
+
+    if all_ok:
+        print(f"  [OK] All Qwen models ready")
+    return all_ok
+
 def main():
     print_banner("ComfyUI + Z-Image Turbo + QwenVL 整合包\n国内镜像优化版")
     
@@ -533,6 +635,8 @@ def main():
         ("安装 ComfyUI", install_comfyui),
         ("安装 ComfyUI-Manager", install_comfyui_manager),
         ("安装 QwenVL 节点", install_qwenvl_node),
+        (f"下载 Qwen LLM/VL 模型 (~13GB)" if variant else "跳过 Qwen 模型下载",
+         lambda: download_qwen_models() if variant else True),
         (f"下载 Z-Image Turbo 模型 ({variant.upper()})" if variant else "跳过模型下载",
          lambda: download_zimage_model(variant) if variant else True),
         ("配置模型路径", setup_model_config),
