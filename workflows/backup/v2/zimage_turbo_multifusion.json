@@ -1,0 +1,683 @@
+{
+  "last_node_id": 18,
+  "last_link_id": 28,
+  "nodes": [
+    {
+      "id": 1,
+      "type": "UNETLoader",
+      "pos": [
+        50,
+        50
+      ],
+      "size": [
+        315,
+        82
+      ],
+      "outputs": [
+        {
+          "name": "MODEL",
+          "type": "MODEL",
+          "links": [
+            1
+          ]
+        }
+      ],
+      "widgets_values": [
+        "z_image_turbo_bf16.safetensors",
+        "default"
+      ]
+    },
+    {
+      "id": 2,
+      "type": "CLIPLoader",
+      "pos": [
+        50,
+        160
+      ],
+      "size": [
+        315,
+        82
+      ],
+      "outputs": [
+        {
+          "name": "CLIP",
+          "type": "CLIP",
+          "links": [
+            2
+          ]
+        }
+      ],
+      "widgets_values": [
+        "qwen_3_4b.safetensors",
+        "qwen_image"
+      ]
+    },
+    {
+      "id": 3,
+      "type": "VAELoader",
+      "pos": [
+        50,
+        280
+      ],
+      "size": [
+        315,
+        58
+      ],
+      "outputs": [
+        {
+          "name": "VAE",
+          "type": "VAE",
+          "links": [
+            3
+          ]
+        }
+      ],
+      "widgets_values": [
+        "ae.safetensors"
+      ]
+    },
+    {
+      "id": 10,
+      "type": "LoadImage",
+      "pos": [
+        50,
+        400
+      ],
+      "size": [
+        280,
+        200
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            10
+          ]
+        }
+      ],
+      "title": "Image A: Subject/style/face reference",
+      "widgets_values": [
+        "image_a.png",
+        "image"
+      ]
+    },
+    {
+      "id": 11,
+      "type": "VAEEncode",
+      "pos": [
+        380,
+        400
+      ],
+      "size": [
+        180,
+        46
+      ],
+      "inputs": [
+        {
+          "name": "pixels",
+          "type": "IMAGE",
+          "link": 10
+        },
+        {
+          "name": "vae",
+          "type": "VAE",
+          "link": 3
+        }
+      ],
+      "outputs": [
+        {
+          "name": "LATENT",
+          "type": "LATENT",
+          "links": [
+            11
+          ]
+        }
+      ],
+      "title": "Encode A"
+    },
+    {
+      "id": 20,
+      "type": "LoadImage",
+      "pos": [
+        50,
+        640
+      ],
+      "size": [
+        280,
+        200
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            20
+          ]
+        }
+      ],
+      "title": "Image B: Pose/composition reference",
+      "widgets_values": [
+        "image_b.png",
+        "image"
+      ]
+    },
+    {
+      "id": 21,
+      "type": "VAEEncode",
+      "pos": [
+        380,
+        640
+      ],
+      "size": [
+        180,
+        46
+      ],
+      "inputs": [
+        {
+          "name": "pixels",
+          "type": "IMAGE",
+          "link": 20
+        },
+        {
+          "name": "vae",
+          "type": "VAE",
+          "link": 3
+        }
+      ],
+      "outputs": [
+        {
+          "name": "LATENT",
+          "type": "LATENT",
+          "links": [
+            21
+          ]
+        }
+      ],
+      "title": "Encode B"
+    },
+    {
+      "id": 30,
+      "type": "LoadImage",
+      "pos": [
+        50,
+        880
+      ],
+      "size": [
+        280,
+        200
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            30
+          ]
+        }
+      ],
+      "title": "Image C: Background/scene reference",
+      "widgets_values": [
+        "image_c.png",
+        "image"
+      ]
+    },
+    {
+      "id": 31,
+      "type": "VAEEncode",
+      "pos": [
+        380,
+        880
+      ],
+      "size": [
+        180,
+        46
+      ],
+      "inputs": [
+        {
+          "name": "pixels",
+          "type": "IMAGE",
+          "link": 30
+        },
+        {
+          "name": "vae",
+          "type": "VAE",
+          "link": 3
+        }
+      ],
+      "outputs": [
+        {
+          "name": "LATENT",
+          "type": "LATENT",
+          "links": [
+            31
+          ]
+        }
+      ],
+      "title": "Encode C"
+    },
+    {
+      "id": 12,
+      "type": "LatentBlend",
+      "pos": [
+        620,
+        500
+      ],
+      "size": [
+        250,
+        80
+      ],
+      "inputs": [
+        {
+          "name": "samples1",
+          "type": "LATENT",
+          "link": 11
+        },
+        {
+          "name": "samples2",
+          "type": "LATENT",
+          "link": 21
+        }
+      ],
+      "outputs": [
+        {
+          "name": "LATENT",
+          "type": "LATENT",
+          "links": [
+            12
+          ]
+        }
+      ],
+      "title": "Blend A+B",
+      "widgets_values": [
+        0.5,
+        "normal"
+      ]
+    },
+    {
+      "id": 22,
+      "type": "LatentBlend",
+      "pos": [
+        620,
+        750
+      ],
+      "size": [
+        250,
+        80
+      ],
+      "inputs": [
+        {
+          "name": "samples1",
+          "type": "LATENT",
+          "link": 12
+        },
+        {
+          "name": "samples2",
+          "type": "LATENT",
+          "link": 31
+        }
+      ],
+      "outputs": [
+        {
+          "name": "LATENT",
+          "type": "LATENT",
+          "links": [
+            22
+          ]
+        }
+      ],
+      "title": "Blend All (A+B+C)",
+      "widgets_values": [
+        0.33,
+        "normal"
+      ]
+    },
+    {
+      "id": 40,
+      "type": "AILab_QwenVL_PromptEnhancer",
+      "pos": [
+        620,
+        900
+      ],
+      "size": [
+        420,
+        100
+      ],
+      "outputs": [
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": [
+            40
+          ]
+        }
+      ],
+      "title": "Fusion Prompt: Keywords for QwenVL (auto-expands)",
+      "widgets_values": [
+        "Qwen3-0.6B",
+        "None (FP16)",
+        "auto",
+        false,
+        "auto",
+        "combine three scenes into one harmonious image, unified lighting, coherent composition, epic wide shot, cinematic",
+        "Enhance",
+        "",
+        256,
+        0.7,
+        0.9,
+        1.1,
+        true,
+        42
+      ]
+    },
+    {
+      "id": 41,
+      "type": "CLIPTextEncode",
+      "pos": [
+        1100,
+        50
+      ],
+      "size": [
+        400,
+        60
+      ],
+      "inputs": [
+        {
+          "name": "clip",
+          "type": "CLIP",
+          "link": 2
+        },
+        {
+          "name": "text",
+          "type": "STRING",
+          "link": 40
+        }
+      ],
+      "outputs": [
+        {
+          "name": "CONDITIONING",
+          "type": "CONDITIONING",
+          "links": [
+            41
+          ]
+        }
+      ],
+      "title": "Positive (QwenVL expanded)"
+    },
+    {
+      "id": 5,
+      "type": "CLIPTextEncode",
+      "pos": [
+        1100,
+        140
+      ],
+      "size": [
+        400,
+        60
+      ],
+      "inputs": [
+        {
+          "name": "clip",
+          "type": "CLIP",
+          "link": 2
+        }
+      ],
+      "outputs": [
+        {
+          "name": "CONDITIONING",
+          "type": "CONDITIONING",
+          "links": [
+            5
+          ]
+        }
+      ],
+      "title": "Negative (messy composition, anatomy, quality)",
+      "widgets_values": [
+        "lowres, bad anatomy, bad hands, text, error, missing fingers, ugly, deformed, messy composition"
+      ]
+    },
+    {
+      "id": 7,
+      "type": "KSampler",
+      "pos": [
+        1100,
+        240
+      ],
+      "size": [
+        315,
+        240
+      ],
+      "inputs": [
+        {
+          "name": "model",
+          "type": "MODEL",
+          "link": 1
+        },
+        {
+          "name": "positive",
+          "type": "CONDITIONING",
+          "link": 41
+        },
+        {
+          "name": "negative",
+          "type": "CONDITIONING",
+          "link": 5
+        },
+        {
+          "name": "latent_image",
+          "type": "LATENT",
+          "link": 22
+        }
+      ],
+      "outputs": [
+        {
+          "name": "LATENT",
+          "type": "LATENT",
+          "links": [
+            7
+          ]
+        }
+      ],
+      "title": "Sampler (steps=6, denoise=0.6 | increase for more freedom)",
+      "widgets_values": [
+        123456789,
+        "randomize",
+        6,
+        2.5,
+        "euler",
+        "beta",
+        0.6
+      ]
+    },
+    {
+      "id": 8,
+      "type": "VAEDecode",
+      "pos": [
+        1460,
+        240
+      ],
+      "size": [
+        210,
+        46
+      ],
+      "inputs": [
+        {
+          "name": "samples",
+          "type": "LATENT",
+          "link": 7
+        },
+        {
+          "name": "vae",
+          "type": "VAE",
+          "link": 3
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            8
+          ]
+        }
+      ]
+    },
+    {
+      "id": 9,
+      "type": "PreviewImage",
+      "pos": [
+        1460,
+        320
+      ],
+      "size": [
+        300,
+        300
+      ],
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 8
+        }
+      ]
+    }
+  ],
+  "links": [
+    [
+      1,
+      1,
+      0,
+      7,
+      0,
+      "MODEL"
+    ],
+    [
+      2,
+      2,
+      0,
+      41,
+      0,
+      "CLIP"
+    ],
+    [
+      3,
+      3,
+      0,
+      11,
+      1,
+      "VAE"
+    ],
+    [
+      5,
+      5,
+      0,
+      7,
+      2,
+      "CONDITIONING"
+    ],
+    [
+      7,
+      7,
+      0,
+      8,
+      0,
+      "LATENT"
+    ],
+    [
+      8,
+      8,
+      0,
+      9,
+      0,
+      "IMAGE"
+    ],
+    [
+      10,
+      10,
+      0,
+      11,
+      0,
+      "IMAGE"
+    ],
+    [
+      11,
+      11,
+      0,
+      12,
+      0,
+      "LATENT"
+    ],
+    [
+      12,
+      12,
+      0,
+      22,
+      0,
+      "LATENT"
+    ],
+    [
+      20,
+      20,
+      0,
+      21,
+      0,
+      "IMAGE"
+    ],
+    [
+      21,
+      21,
+      0,
+      12,
+      1,
+      "LATENT"
+    ],
+    [
+      22,
+      22,
+      0,
+      7,
+      3,
+      "LATENT"
+    ],
+    [
+      30,
+      30,
+      0,
+      31,
+      0,
+      "IMAGE"
+    ],
+    [
+      31,
+      31,
+      0,
+      22,
+      1,
+      "LATENT"
+    ],
+    [
+      40,
+      40,
+      0,
+      41,
+      1,
+      "STRING"
+    ],
+    [
+      41,
+      41,
+      0,
+      7,
+      1,
+      "CONDITIONING"
+    ]
+  ],
+  "groups": [],
+  "config": {},
+  "version": 0.4,
+  "extra": {
+    "workflow": {
+      "name": "Multi-Image Fusion (3-input) | 3-image fusion | blend 3 images into 1 via LatentBlend"
+    }
+  }
+}

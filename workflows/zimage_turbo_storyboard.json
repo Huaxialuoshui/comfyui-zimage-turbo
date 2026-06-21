@@ -1,0 +1,1060 @@
+{
+  "last_node_id": 308,
+  "last_link_id": 47,
+  "nodes": [
+    {
+      "id": 1,
+      "type": "UNETLoader",
+      "pos": [
+        50,
+        50
+      ],
+      "size": [
+        315,
+        82
+      ],
+      "outputs": [
+        {
+          "name": "MODEL",
+          "type": "MODEL",
+          "links": [
+            1
+          ]
+        }
+      ],
+      "widgets_values": [
+        "z_image_turbo_bf16.safetensors",
+        "default"
+      ]
+    },
+    {
+      "id": 2,
+      "type": "CLIPLoader",
+      "pos": [
+        50,
+        160
+      ],
+      "size": [
+        315,
+        82
+      ],
+      "outputs": [
+        {
+          "name": "CLIP",
+          "type": "CLIP",
+          "links": [
+            2
+          ]
+        }
+      ],
+      "widgets_values": [
+        "qwen_3_4b.safetensors",
+        "qwen_image"
+      ]
+    },
+    {
+      "id": 3,
+      "type": "VAELoader",
+      "pos": [
+        50,
+        280
+      ],
+      "size": [
+        315,
+        58
+      ],
+      "outputs": [
+        {
+          "name": "VAE",
+          "type": "VAE",
+          "links": [
+            3
+          ]
+        }
+      ],
+      "widgets_values": [
+        "ae.safetensors"
+      ]
+    },
+    {
+      "id": 101,
+      "type": "AILab_QwenVL_PromptEnhancer",
+      "pos": [
+        450,
+        50
+      ],
+      "size": [
+        420,
+        120
+      ],
+      "outputs": [
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": [
+            101
+          ]
+        }
+      ],
+      "title": "S1 Keywords: Scene 1 setup (who, where, mood)",
+      "widgets_values": [
+        "Qwen3-0.6B",
+        "None (FP16)",
+        "auto",
+        false,
+        "auto",
+        "chinese girl, traditional dress, ancient temple courtyard, morning mist",
+        "Enhance",
+        "",
+        256,
+        0.7,
+        0.9,
+        1.1,
+        true,
+        42
+      ]
+    },
+    {
+      "id": 102,
+      "type": "CLIPTextEncode",
+      "pos": [
+        920,
+        50
+      ],
+      "size": [
+        400,
+        60
+      ],
+      "inputs": [
+        {
+          "name": "clip",
+          "type": "CLIP",
+          "link": 2
+        },
+        {
+          "name": "text",
+          "type": "STRING",
+          "link": 101
+        }
+      ],
+      "outputs": [
+        {
+          "name": "CONDITIONING",
+          "type": "CONDITIONING",
+          "links": [
+            102
+          ]
+        }
+      ],
+      "title": "S1 Positive: Auto-expanded"
+    },
+    {
+      "id": 103,
+      "type": "EmptySD3LatentImage",
+      "pos": [
+        920,
+        140
+      ],
+      "size": [
+        315,
+        80
+      ],
+      "outputs": [
+        {
+          "name": "LATENT",
+          "type": "LATENT",
+          "links": [
+            103
+          ]
+        }
+      ],
+      "widgets_values": [
+        1
+      ],
+      "inputs": [
+        {
+          "name": "width",
+          "type": "INT",
+          "link": 46
+        },
+        {
+          "name": "height",
+          "type": "INT",
+          "link": 47
+        }
+      ]
+    },
+    {
+      "id": 104,
+      "type": "KSampler",
+      "pos": [
+        920,
+        250
+      ],
+      "size": [
+        315,
+        220
+      ],
+      "inputs": [
+        {
+          "name": "model",
+          "type": "MODEL",
+          "link": 1
+        },
+        {
+          "name": "positive",
+          "type": "CONDITIONING",
+          "link": 102
+        },
+        {
+          "name": "negative",
+          "type": "CONDITIONING",
+          "link": 5
+        },
+        {
+          "name": "latent_image",
+          "type": "LATENT",
+          "link": 103
+        }
+      ],
+      "outputs": [
+        {
+          "name": "LATENT",
+          "type": "LATENT",
+          "links": [
+            104
+          ]
+        }
+      ],
+      "widgets_values": [
+        0,
+        "randomize",
+        4,
+        1.0,
+        "euler",
+        "simple",
+        1.0
+      ]
+    },
+    {
+      "id": 105,
+      "type": "VAEDecode",
+      "pos": [
+        1300,
+        250
+      ],
+      "size": [
+        210,
+        46
+      ],
+      "inputs": [
+        {
+          "name": "samples",
+          "type": "LATENT",
+          "link": 104
+        },
+        {
+          "name": "vae",
+          "type": "VAE",
+          "link": 3
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            105
+          ]
+        }
+      ],
+      "title": "S1 Output"
+    },
+    {
+      "id": 201,
+      "type": "VAEEncode",
+      "pos": [
+        50,
+        500
+      ],
+      "size": [
+        210,
+        46
+      ],
+      "inputs": [
+        {
+          "name": "pixels",
+          "type": "IMAGE",
+          "link": 105
+        },
+        {
+          "name": "vae",
+          "type": "VAE",
+          "link": 3
+        }
+      ],
+      "outputs": [
+        {
+          "name": "LATENT",
+          "type": "LATENT",
+          "links": [
+            201
+          ]
+        }
+      ]
+    },
+    {
+      "id": 202,
+      "type": "AILab_QwenVL_PromptEnhancer",
+      "pos": [
+        450,
+        500
+      ],
+      "size": [
+        420,
+        120
+      ],
+      "outputs": [
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": [
+            202
+          ]
+        }
+      ],
+      "title": "S2 Keywords: Scene 2 evolution (what changes)",
+      "widgets_values": [
+        "Qwen3-0.6B",
+        "None (FP16)",
+        "auto",
+        false,
+        "auto",
+        "evolve the scene, dramatic change, girl walking forward, wind blowing, petals in air, golden hour light",
+        "Enhance",
+        "",
+        256,
+        0.7,
+        0.9,
+        1.1,
+        true,
+        42
+      ]
+    },
+    {
+      "id": 203,
+      "type": "CLIPTextEncode",
+      "pos": [
+        920,
+        500
+      ],
+      "size": [
+        400,
+        60
+      ],
+      "inputs": [
+        {
+          "name": "clip",
+          "type": "CLIP",
+          "link": 2
+        },
+        {
+          "name": "text",
+          "type": "STRING",
+          "link": 202
+        }
+      ],
+      "outputs": [
+        {
+          "name": "CONDITIONING",
+          "type": "CONDITIONING",
+          "links": [
+            203
+          ]
+        }
+      ],
+      "title": "S2 Positive: Auto-expanded"
+    },
+    {
+      "id": 204,
+      "type": "KSampler",
+      "pos": [
+        920,
+        600
+      ],
+      "size": [
+        315,
+        220
+      ],
+      "inputs": [
+        {
+          "name": "model",
+          "type": "MODEL",
+          "link": 1
+        },
+        {
+          "name": "positive",
+          "type": "CONDITIONING",
+          "link": 203
+        },
+        {
+          "name": "negative",
+          "type": "CONDITIONING",
+          "link": 5
+        },
+        {
+          "name": "latent_image",
+          "type": "LATENT",
+          "link": 201
+        }
+      ],
+      "outputs": [
+        {
+          "name": "LATENT",
+          "type": "LATENT",
+          "links": [
+            204
+          ]
+        }
+      ],
+      "widgets_values": [
+        0,
+        "randomize",
+        4,
+        1.0,
+        "euler",
+        "simple",
+        0.5
+      ]
+    },
+    {
+      "id": 205,
+      "type": "VAEDecode",
+      "pos": [
+        1300,
+        600
+      ],
+      "size": [
+        210,
+        46
+      ],
+      "inputs": [
+        {
+          "name": "samples",
+          "type": "LATENT",
+          "link": 204
+        },
+        {
+          "name": "vae",
+          "type": "VAE",
+          "link": 3
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            205
+          ]
+        }
+      ],
+      "title": "S2 Output"
+    },
+    {
+      "id": 301,
+      "type": "VAEEncode",
+      "pos": [
+        50,
+        950
+      ],
+      "size": [
+        210,
+        46
+      ],
+      "inputs": [
+        {
+          "name": "pixels",
+          "type": "IMAGE",
+          "link": 205
+        },
+        {
+          "name": "vae",
+          "type": "VAE",
+          "link": 3
+        }
+      ],
+      "outputs": [
+        {
+          "name": "LATENT",
+          "type": "LATENT",
+          "links": [
+            301
+          ]
+        }
+      ]
+    },
+    {
+      "id": 302,
+      "type": "AILab_QwenVL_PromptEnhancer",
+      "pos": [
+        450,
+        950
+      ],
+      "size": [
+        420,
+        120
+      ],
+      "outputs": [
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": [
+            302
+          ]
+        }
+      ],
+      "title": "S3 Keywords: Scene 3 climax (resolution, final mood)",
+      "widgets_values": [
+        "Qwen3-0.6B",
+        "None (FP16)",
+        "auto",
+        false,
+        "auto",
+        "climax moment, dramatic transformation, girl reaches sky, magical energy, glowing aura, epic finale",
+        "Enhance",
+        "",
+        256,
+        0.7,
+        0.9,
+        1.1,
+        true,
+        42
+      ]
+    },
+    {
+      "id": 303,
+      "type": "CLIPTextEncode",
+      "pos": [
+        920,
+        950
+      ],
+      "size": [
+        400,
+        60
+      ],
+      "inputs": [
+        {
+          "name": "clip",
+          "type": "CLIP",
+          "link": 2
+        },
+        {
+          "name": "text",
+          "type": "STRING",
+          "link": 302
+        }
+      ],
+      "outputs": [
+        {
+          "name": "CONDITIONING",
+          "type": "CONDITIONING",
+          "links": [
+            303
+          ]
+        }
+      ],
+      "title": "S3 Positive: Auto-expanded"
+    },
+    {
+      "id": 304,
+      "type": "KSampler",
+      "pos": [
+        920,
+        1050
+      ],
+      "size": [
+        315,
+        220
+      ],
+      "inputs": [
+        {
+          "name": "model",
+          "type": "MODEL",
+          "link": 1
+        },
+        {
+          "name": "positive",
+          "type": "CONDITIONING",
+          "link": 303
+        },
+        {
+          "name": "negative",
+          "type": "CONDITIONING",
+          "link": 5
+        },
+        {
+          "name": "latent_image",
+          "type": "LATENT",
+          "link": 301
+        }
+      ],
+      "outputs": [
+        {
+          "name": "LATENT",
+          "type": "LATENT",
+          "links": [
+            304
+          ]
+        }
+      ],
+      "widgets_values": [
+        0,
+        "randomize",
+        4,
+        1.0,
+        "euler",
+        "simple",
+        0.5
+      ]
+    },
+    {
+      "id": 305,
+      "type": "VAEDecode",
+      "pos": [
+        1300,
+        1050
+      ],
+      "size": [
+        210,
+        46
+      ],
+      "inputs": [
+        {
+          "name": "samples",
+          "type": "LATENT",
+          "link": 304
+        },
+        {
+          "name": "vae",
+          "type": "VAE",
+          "link": 3
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            305
+          ]
+        }
+      ],
+      "title": "S3 Output"
+    },
+    {
+      "id": 5,
+      "type": "CLIPTextEncode",
+      "pos": [
+        1300,
+        1300
+      ],
+      "size": [
+        400,
+        80
+      ],
+      "inputs": [
+        {
+          "name": "clip",
+          "type": "CLIP",
+          "link": 2
+        }
+      ],
+      "outputs": [
+        {
+          "name": "CONDITIONING",
+          "type": "CONDITIONING",
+          "links": [
+            5
+          ]
+        }
+      ],
+      "title": "Negative (anatomy, quality, inconsistency)",
+      "widgets_values": [
+        "lowres, bad anatomy, bad hands, text, error, missing fingers"
+      ]
+    },
+    {
+      "id": 106,
+      "type": "PreviewImage",
+      "pos": [
+        1600,
+        250
+      ],
+      "size": [
+        250,
+        200
+      ],
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 105
+        }
+      ],
+      "title": "Preview: Scene 1"
+    },
+    {
+      "id": 206,
+      "type": "PreviewImage",
+      "pos": [
+        1600,
+        600
+      ],
+      "size": [
+        250,
+        200
+      ],
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 205
+        }
+      ],
+      "title": "Preview: Scene 2"
+    },
+    {
+      "id": 306,
+      "type": "PreviewImage",
+      "pos": [
+        1600,
+        1050
+      ],
+      "size": [
+        250,
+        200
+      ],
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 305
+        }
+      ],
+      "title": "Preview: Scene 3"
+    },
+    {
+      "id": 307,
+      "type": "PrimitiveNode",
+      "pos": [
+        450,
+        580
+      ],
+      "size": [
+        210,
+        82
+      ],
+      "flags": {},
+      "order": 999,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "INT",
+          "type": "INT",
+          "widget": {
+            "name": "width"
+          },
+          "links": [
+            46
+          ]
+        }
+      ],
+      "title": "Width",
+      "properties": {
+        "Run widget replace on values": false
+      },
+      "widgets_values": [
+        1024
+      ]
+    },
+    {
+      "id": 308,
+      "type": "PrimitiveNode",
+      "pos": [
+        450,
+        680
+      ],
+      "size": [
+        210,
+        82
+      ],
+      "flags": {},
+      "order": 999,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "INT",
+          "type": "INT",
+          "widget": {
+            "name": "height"
+          },
+          "links": [
+            47
+          ]
+        }
+      ],
+      "title": "Height",
+      "properties": {
+        "Run widget replace on values": false
+      },
+      "widgets_values": [
+        1024
+      ]
+    }
+  ],
+  "links": [
+    [
+      1,
+      1,
+      0,
+      104,
+      0,
+      "MODEL"
+    ],
+    [
+      1,
+      1,
+      0,
+      204,
+      0,
+      "MODEL"
+    ],
+    [
+      1,
+      1,
+      0,
+      304,
+      0,
+      "MODEL"
+    ],
+    [
+      2,
+      2,
+      0,
+      102,
+      0,
+      "CLIP"
+    ],
+    [
+      2,
+      2,
+      0,
+      203,
+      0,
+      "CLIP"
+    ],
+    [
+      2,
+      2,
+      0,
+      303,
+      0,
+      "CLIP"
+    ],
+    [
+      3,
+      3,
+      0,
+      105,
+      1,
+      "VAE"
+    ],
+    [
+      3,
+      3,
+      0,
+      205,
+      1,
+      "VAE"
+    ],
+    [
+      3,
+      3,
+      0,
+      305,
+      1,
+      "VAE"
+    ],
+    [
+      5,
+      5,
+      0,
+      104,
+      2,
+      "CONDITIONING"
+    ],
+    [
+      5,
+      5,
+      0,
+      204,
+      2,
+      "CONDITIONING"
+    ],
+    [
+      5,
+      5,
+      0,
+      304,
+      2,
+      "CONDITIONING"
+    ],
+    [
+      101,
+      101,
+      0,
+      102,
+      1,
+      "STRING"
+    ],
+    [
+      102,
+      102,
+      0,
+      104,
+      1,
+      "CONDITIONING"
+    ],
+    [
+      103,
+      103,
+      0,
+      104,
+      3,
+      "LATENT"
+    ],
+    [
+      104,
+      104,
+      0,
+      105,
+      0,
+      "LATENT"
+    ],
+    [
+      105,
+      105,
+      0,
+      106,
+      0,
+      "IMAGE"
+    ],
+    [
+      201,
+      201,
+      0,
+      204,
+      3,
+      "LATENT"
+    ],
+    [
+      202,
+      202,
+      0,
+      203,
+      1,
+      "STRING"
+    ],
+    [
+      203,
+      203,
+      0,
+      204,
+      1,
+      "CONDITIONING"
+    ],
+    [
+      204,
+      204,
+      0,
+      205,
+      0,
+      "LATENT"
+    ],
+    [
+      205,
+      205,
+      0,
+      206,
+      0,
+      "IMAGE"
+    ],
+    [
+      301,
+      301,
+      0,
+      304,
+      3,
+      "LATENT"
+    ],
+    [
+      302,
+      302,
+      0,
+      303,
+      1,
+      "STRING"
+    ],
+    [
+      303,
+      303,
+      0,
+      304,
+      1,
+      "CONDITIONING"
+    ],
+    [
+      304,
+      304,
+      0,
+      305,
+      0,
+      "LATENT"
+    ],
+    [
+      305,
+      305,
+      0,
+      306,
+      0,
+      "IMAGE"
+    ],
+    [
+      46,
+      307,
+      0,
+      6,
+      0,
+      "INT"
+    ],
+    [
+      47,
+      308,
+      0,
+      6,
+      1,
+      "INT"
+    ]
+  ],
+  "groups": [],
+  "config": {},
+  "version": 0.4,
+  "extra": {
+    "workflow": {
+      "name": "3-Stage QwenVL Storyboard | 3-scene storyboard | 1 theme -> 3 sequential scenes auto-generated"
+    }
+  }
+}
