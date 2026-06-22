@@ -1,7 +1,7 @@
 {
   "version": 0.4,
   "last_node_id": 15,
-  "last_link_id": 15,
+  "last_link_id": 13,
   "nodes": [
     {
       "id": 1,
@@ -371,67 +371,6 @@
       "outputs": []
     },
     {
-      "id": 11,
-      "type": "ImageGridComposite",
-      "pos": [
-        1600,
-        500
-      ],
-      "size": [
-        210,
-        50
-      ],
-      "flags": {},
-      "order": 10,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "images",
-          "type": "IMAGE",
-          "link": 12
-        }
-      ],
-      "outputs": [
-        {
-          "name": "IMAGE",
-          "type": "IMAGE",
-          "links": [
-            14
-          ],
-          "slot_index": 0
-        }
-      ],
-      "title": "Grid view (all seeds)",
-      "widgets_values": [
-        2,
-        2
-      ]
-    },
-    {
-      "id": 12,
-      "type": "PreviewImage",
-      "pos": [
-        1600,
-        580
-      ],
-      "size": [
-        350,
-        400
-      ],
-      "flags": {},
-      "order": 11,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "images",
-          "type": "IMAGE",
-          "link": 14
-        }
-      ],
-      "outputs": [],
-      "title": "Grid Preview (all 4 seeds)"
-    },
-    {
       "id": 13,
       "type": "PrimitiveNode",
       "pos": [
@@ -639,14 +578,6 @@
       9,
       0,
       10,
-      0,
-      "IMAGE"
-    ],
-    [
-      14,
-      11,
-      0,
-      12,
       0,
       "IMAGE"
     ]

@@ -1,7 +1,7 @@
 ﻿#!/usr/bin/env python3
 """
-ComfyUI + Z-Image Turbo + QwenVL 整合包安装脚本 (国内镜像优化版)
-基于知乎文档：ComfyUI部署指南 - 本地AI绘图工作流
+ComfyUI + Z-Image Turbo + QwenVL 鏁村悎鍖呭畨瑁呰剼鏈?(鍥藉唴闀滃儚浼樺寲鐗?
+鍩轰簬鐭ヤ箮鏂囨。锛欳omfyUI閮ㄧ讲鎸囧崡 - 鏈湴AI缁樺浘宸ヤ綔娴?
 """
 
 import os
@@ -11,7 +11,7 @@ import shutil
 import json
 from pathlib import Path
 
-# ========== 配置区 ==========
+# ========== 閰嶇疆鍖?==========
 BASE_DIR = Path(__file__).parent.parent.resolve()
 COMFYUI_DIR = BASE_DIR / "ComfyUI"
 MODELS_DIR = COMFYUI_DIR / "models"
@@ -19,45 +19,45 @@ CHECKPOINT_DIR = MODELS_DIR / "checkpoints"
 CUSTOM_NODES_DIR = COMFYUI_DIR / "custom_nodes"
 PYTHON_EXE = sys.executable
 
-# ---- GitHub 镜像源 (国内加速) ----
-GITHUB_MIRRORS = [""]  # VPN直连
+# ---- GitHub 闀滃儚婧?(鍥藉唴鍔犻€? ----
+GITHUB_MIRRORS = [""]  # VPN鐩磋繛
 
-# ComfyUI 官方仓库
+# ComfyUI 瀹樻柟浠撳簱
 COMFYUI_REPO_PATH = "comfyanonymous/ComfyUI.git"
 COMFYUI_MANAGER_REPO_PATH = "ltdrdata/ComfyUI-Manager.git"
 
-# QwenVL 节点仓库 (多个备选)
+# QwenVL 鑺傜偣浠撳簱 (澶氫釜澶囬€?
 
 # Qwen LLM / VL models for ComfyUI-QwenVL nodes
 QWEN_MODELS = {
     "Qwen3-0.6B": {
         "repo_id": "Qwen/Qwen3-0.6B",
         "target_dir": "LLM/Qwen-VL",
-        "desc": "Qwen3 0.6B 纯文本 - 用于 PromptEnhancer 提示词扩写",
+        "desc": "Qwen3 0.6B 绾枃鏈?- 鐢ㄤ簬 PromptEnhancer 鎻愮ず璇嶆墿鍐?,
     },
     "Qwen2-VL-2B-Instruct": {
         "repo_id": "Qwen/Qwen2-VL-2B-Instruct",
         "target_dir": "LLM/Qwen-VL",
-        "desc": "Qwen2-VL 2B - 用于 pose_transform 姿态分析",
+        "desc": "Qwen2-VL 2B - 鐢ㄤ簬 pose_transform 濮挎€佸垎鏋?,
     },
     "Qwen3-VL-4B-Instruct": {
         "repo_id": "Qwen/Qwen3-VL-4B-Instruct",
         "target_dir": "LLM/Qwen-VL",
-        "desc": "Qwen3-VL 4B - 用于 analyze_gen 和 iterative_refine 智能分析",
+        "desc": "Qwen3-VL 4B - 鐢ㄤ簬 analyze_gen 鍜?iterative_refine 鏅鸿兘鍒嗘瀽",
     },
 }
 
 QWENVL_REPOS = [
-    "1038lab/ComfyUI-QwenVL.git",         # 785 stars, 最活跃
-    "alexcong/ComfyUI_QwenVL.git",        # 144 stars (注意下划线)
-    "WingeD123/ComfyUI_QwenVL_PromptCaption.git",  # 提示词扩写专用
-    "aistudynow/ComfyUI-QwenVL.git",      # 14 stars, 备用
+    "1038lab/ComfyUI-QwenVL.git",         # 785 stars, 鏈€娲昏穬
+    "alexcong/ComfyUI_QwenVL.git",        # 144 stars (娉ㄦ剰涓嬪垝绾?
+    "WingeD123/ComfyUI_QwenVL_PromptCaption.git",  # 鎻愮ず璇嶆墿鍐欎笓鐢?
+    "aistudynow/ComfyUI-QwenVL.git",      # 14 stars, 澶囩敤
 ]
 
-# ---- HuggingFace 镜像 ----
+# ---- HuggingFace 闀滃儚 ----
 HF_MIRROR = "https://huggingface.co"
 
-# Z-Image Turbo 模型
+# Z-Image Turbo 妯″瀷
 ZIMAGE_REPO = "Comfy-Org/z_image_turbo"
 
 ZIMAGE_FILES = {
@@ -81,38 +81,38 @@ ZIMAGE_COMMON_FILES = {
 }
 
 QWENVL_REPOS = [
-    "1038lab/ComfyUI-QwenVL.git",         # 785 stars, 最活跃
-    "alexcong/ComfyUI_QwenVL.git",        # 144 stars (注意下划线)
-    "WingeD123/ComfyUI_QwenVL_PromptCaption.git",  # 提示词扩写专用
-    "aistudynow/ComfyUI-QwenVL.git",      # 14 stars, 备用
+    "1038lab/ComfyUI-QwenVL.git",         # 785 stars, 鏈€娲昏穬
+    "alexcong/ComfyUI_QwenVL.git",        # 144 stars (娉ㄦ剰涓嬪垝绾?
+    "WingeD123/ComfyUI_QwenVL_PromptCaption.git",  # 鎻愮ず璇嶆墿鍐欎笓鐢?
+    "aistudynow/ComfyUI-QwenVL.git",      # 14 stars, 澶囩敤
 ]
 
-# ---- HuggingFace 镜像 ----
+# ---- HuggingFace 闀滃儚 ----
 HF_MIRROR = "https://huggingface.co"
 
-# Z-Image Turbo 模型
+# Z-Image Turbo 妯″瀷
 ZIMAGE_MODELS = {
     "bf16": {
         "name": "z-image-turbo-bf16-aio.safetensors",
         "repo": "LLMhacker/Z-Image-Turbo",
         "file": "z-image-turbo-bf16-aio.safetensors",
-        "desc": "BF16精度 - 推荐16G+显存使用, AIO内置CLIP+VAE"
+        "desc": "BF16绮惧害 - 鎺ㄨ崘16G+鏄惧瓨浣跨敤, AIO鍐呯疆CLIP+VAE"
     },
     "fp8": {
         "name": "z-image-turbo-fp8-aio.safetensors",
         "repo": "LLMhacker/Z-Image-Turbo",
         "file": "z-image-turbo-fp8-aio.safetensors",
-        "desc": "FP8精度 - 适合8-12G显存, AIO内置CLIP+VAE"
+        "desc": "FP8绮惧害 - 閫傚悎8-12G鏄惧瓨, AIO鍐呯疆CLIP+VAE"
     }
 }
 
-# ---- pip 国内镜像 ----
+# ---- pip 鍥藉唴闀滃儚 ----
 PIP_MIRROR = "https://pypi.org/simple"
 PIP_INDEX_ARGS = []
 
 
 def run_cmd(cmd, cwd=None, desc="", timeout=300):
-    """运行命令并实时输出"""
+    """杩愯鍛戒护骞跺疄鏃惰緭鍑?""
     print(f"\n{'='*60}")
     print(f">>> {desc}")
     print(f">>> {' '.join(cmd) if isinstance(cmd, list) else cmd}")
@@ -120,18 +120,18 @@ def run_cmd(cmd, cwd=None, desc="", timeout=300):
     try:
         result = subprocess.run(cmd, cwd=cwd, shell=isinstance(cmd, str), timeout=timeout)
         if result.returncode != 0:
-            print(f"  [!] 命令返回非零退出码 {result.returncode}")
+            print(f"  [!] 鍛戒护杩斿洖闈為浂閫€鍑虹爜 {result.returncode}")
         return result.returncode == 0
     except subprocess.TimeoutExpired:
-        print(f"  [!] 命令超时 ({timeout}s)")
+        print(f"  [!] 鍛戒护瓒呮椂 ({timeout}s)")
         return False
     except Exception as e:
-        print(f"  [!] 命令执行异常: {e}")
+        print(f"  [!] 鍛戒护鎵ц寮傚父: {e}")
         return False
 
 
 def git_clone_with_mirrors(repo_path, target_dir):
-    """通过多个镜像源尝试克隆 GitHub 仓库"""
+    """閫氳繃澶氫釜闀滃儚婧愬皾璇曞厠闅?GitHub 浠撳簱"""
     if target_dir.exists():
         shutil.rmtree(target_dir)
     
@@ -143,25 +143,25 @@ def git_clone_with_mirrors(repo_path, target_dir):
         else:
             url = f"https://github.com/{repo_path}"
         
-        print(f"    尝试: {url}")
+        print(f"    灏濊瘯: {url}")
         ok = run_cmd(["git", "clone", url, str(target_dir)], 
-                     desc=f"克隆 {repo_path}", timeout=120)
+                     desc=f"鍏嬮殕 {repo_path}", timeout=120)
         if ok:
-            print(f"    [✓] 克隆成功!")
+            print(f"    [鉁揮 鍏嬮殕鎴愬姛!")
             return True
         else:
             if target_dir.exists():
                 shutil.rmtree(target_dir)
-            print(f"    [✗] 失败, 尝试下一个镜像...")
+            print(f"    [鉁梋 澶辫触, 灏濊瘯涓嬩竴涓暅鍍?..")
     
     return False
 
 
 def install_comfyui():
-    """安装 ComfyUI"""
+    """瀹夎 ComfyUI"""
     if COMFYUI_DIR.exists():
-        print(f"[✓] ComfyUI 目录已存在: {COMFYUI_DIR}")
-        choice = input("是否重新安装? (y/N): ").strip().lower()
+        print(f"[鉁揮 ComfyUI 鐩綍宸插瓨鍦? {COMFYUI_DIR}")
+        choice = input("鏄惁閲嶆柊瀹夎? (y/N): ").strip().lower()
         if choice == "y":
             print("  [*] Deleting old ComfyUI...")
             def on_rm_error(func, path, exc_info):
@@ -172,31 +172,31 @@ def install_comfyui():
         else:
             return True
     
-    print("\n[1/5] 克隆 ComfyUI...")
+    print("\n[1/5] 鍏嬮殕 ComfyUI...")
     ok = git_clone_with_mirrors(COMFYUI_REPO_PATH, COMFYUI_DIR)
     if not ok:
-        print("[✗] ComfyUI 克隆失败, 所有镜像源均不可用")
+        print("[鉁梋 ComfyUI 鍏嬮殕澶辫触, 鎵€鏈夐暅鍍忔簮鍧囦笉鍙敤")
         return False
     
-    # 安装ComfyUI依赖 (使用国内pip镜像)
-    print("\n[2/5] 安装 ComfyUI 依赖 (使用清华镜像)...")
+    # 瀹夎ComfyUI渚濊禆 (浣跨敤鍥藉唴pip闀滃儚)
+    print("\n[2/5] 瀹夎 ComfyUI 渚濊禆 (浣跨敤娓呭崕闀滃儚)...")
     req_file = COMFYUI_DIR / "requirements.txt"
     if req_file.exists():
         run_cmd([PYTHON_EXE, "-m", "pip", "install", "-r", str(req_file)] + PIP_INDEX_ARGS,
-                desc="安装ComfyUI Python依赖 (清华镜像)", timeout=600)
+                desc="瀹夎ComfyUI Python渚濊禆 (娓呭崕闀滃儚)", timeout=600)
     
     return True
 
 
 def install_comfyui_manager():
-    """安装 ComfyUI-Manager 节点管理器"""
+    """瀹夎 ComfyUI-Manager 鑺傜偣绠＄悊鍣?""
     manager_dir = CUSTOM_NODES_DIR / "ComfyUI-Manager"
     
     if manager_dir.exists() and (manager_dir / "__init__.py").exists():
-        print(f"[✓] ComfyUI-Manager 已安装: {manager_dir}")
+        print(f"[鉁揮 ComfyUI-Manager 宸插畨瑁? {manager_dir}")
         return True
     
-    print("\n[3/5] 安装 ComfyUI-Manager (节点管理器)...")
+    print("\n[3/5] 瀹夎 ComfyUI-Manager (鑺傜偣绠＄悊鍣?...")
     CUSTOM_NODES_DIR.mkdir(parents=True, exist_ok=True)
     ok = git_clone_with_mirrors(COMFYUI_MANAGER_REPO_PATH, manager_dir)
     
@@ -204,26 +204,26 @@ def install_comfyui_manager():
         req_file = manager_dir / "requirements.txt"
         if req_file.exists():
             run_cmd([PYTHON_EXE, "-m", "pip", "install", "-r", str(req_file)] + PIP_INDEX_ARGS,
-                    desc="安装ComfyUI-Manager依赖 (清华镜像)", timeout=300)
+                    desc="瀹夎ComfyUI-Manager渚濊禆 (娓呭崕闀滃儚)", timeout=300)
     
     return ok
 
 
 def install_qwenvl_node():
-    """安装 QwenVL 自定义节点"""
+    """瀹夎 QwenVL 鑷畾涔夎妭鐐?""
     qwenvl_dir = CUSTOM_NODES_DIR / "ComfyUI-QwenVL"
     
-    # 检查是否有效安装 (目录存在且有Python文件)
+    # 妫€鏌ユ槸鍚︽湁鏁堝畨瑁?(鐩綍瀛樺湪涓旀湁Python鏂囦欢)
     if qwenvl_dir.exists():
         py_files = list(qwenvl_dir.glob("*.py"))
         if py_files:
-            print(f"[✓] ComfyUI-QwenVL 节点已安装 ({len(py_files)} 个Python文件)")
+            print(f"[鉁揮 ComfyUI-QwenVL 鑺傜偣宸插畨瑁?({len(py_files)} 涓狿ython鏂囦欢)")
             return True
         else:
-            print(f"[!] QwenVL 目录存在但为空, 重新安装...")
+            print(f"[!] QwenVL 鐩綍瀛樺湪浣嗕负绌? 閲嶆柊瀹夎...")
             shutil.rmtree(qwenvl_dir)
     
-    print("\n[4/5] 安装 ComfyUI-QwenVL 节点...")
+    print("\n[4/5] 瀹夎 ComfyUI-QwenVL 鑺傜偣...")
     CUSTOM_NODES_DIR.mkdir(parents=True, exist_ok=True)
     
     for repo_path in QWENVL_REPOS:
@@ -232,337 +232,163 @@ def install_qwenvl_node():
             req_file = qwenvl_dir / "requirements.txt"
             if req_file.exists():
                 run_cmd([PYTHON_EXE, "-m", "pip", "install", "-r", str(req_file)] + PIP_INDEX_ARGS,
-                        desc="安装QwenVL节点依赖 (清华镜像)", timeout=300)
+                        desc="瀹夎QwenVL鑺傜偣渚濊禆 (娓呭崕闀滃儚)", timeout=300)
             return True
         else:
             if qwenvl_dir.exists():
                 shutil.rmtree(qwenvl_dir)
     
-    print("[!] QwenVL 节点安装失败")
-    print("[!] 你可以稍后在 ComfyUI-Manager 中通过界面手动安装")
+    print("[!] QwenVL 鑺傜偣瀹夎澶辫触")
+    print("[!] 浣犲彲浠ョ◢鍚庡湪 ComfyUI-Manager 涓€氳繃鐣岄潰鎵嬪姩瀹夎")
     return False
 
 
-def download_zimage_model(variant="bf16"):
-    """Download Z-Image Turbo with resume support and retry logic."""
-    import time, hashlib
-    from huggingface_hub import hf_hub_download, HfHubHTTPError
+def download_file_direct(local_path, url, desc, min_bytes=1024, max_retries=5, exp_size=0):
+    """Download with Range header resume, VPN-node-safe."""
+    import urllib.request, ssl, time
+    
+    local_path = Path(local_path)
+    local_path.parent.mkdir(parents=True, exist_ok=True)
+    
+    for attempt in range(1, max_retries + 1):
+        if attempt > 1:
+            time.sleep(attempt * 10)
+        
+        existing = local_path.stat().st_size if local_path.exists() else 0
+        if existing > min_bytes * 0.95:
+            print(f"  [OK] Already complete: {local_path.name} ({existing/(1024**3):.1f}GB)")
+            return True
+        
+        headers = {"User-Agent": "ComfyUI-Setup/1.0"}
+        if existing > 1024:
+            headers["Range"] = f"bytes={existing}-"
+            print(f"  [..] Resuming from {existing/(1024**3):.1f}GB...")
+        
+        print(f"  [>>] ({attempt}/{max_retries}) {desc}")
+        try:
+            ctx = ssl.create_default_context()
+            req = urllib.request.Request(url, headers=headers)
+            with urllib.request.urlopen(req, context=ctx, timeout=120) as resp:
+                mode = "ab" if existing > 1024 else "wb"
+                total = int(resp.headers.get("Content-Length", 0)) + existing
+                downloaded = existing
+                with open(local_path, mode) as f:
+                    while True:
+                        chunk = resp.read(8*1024*1024)
+                        if not chunk: break
+                        f.write(chunk)
+                        downloaded += len(chunk)
+                        if total > 0:
+                            pct = min(downloaded/total*100, 100)
+                            print(f"\r       {downloaded/(1024**3):.1f}/{total/(1024**3):.1f}GB ({pct:.0f}%)", end="")
+                print()
+            # exp_size passed from caller
+            if exp_size > 0 and local_path.stat().st_size == exp_size:
+                return True
+        except urllib.error.HTTPError as e:
+            if e.code == 416:
+                return True
+            print(f"\n  [!] HTTP {e.code}")
+            break
+        except Exception as e:
+            print(f"\n  [!] {e}")
+    return False
 
+
+def get_zimage_sizes(repo_id):
+    """Fetch official file sizes from HuggingFace API."""
+    import urllib.request, json
+    try:
+        url = f"https://huggingface.co/api/models/{repo_id}?expand[]=siblings"
+        req = urllib.request.Request(url, headers={"User-Agent": "setup/1.0"})
+        with urllib.request.urlopen(req, timeout=15) as resp:
+            data = json.load(resp)
+        return {s["rfilename"]: s.get("size", 0) for s in data.get("siblings", [])}
+    except Exception as e:
+        print(f"  [!] Cannot fetch sizes: {e}")
+        return {}
+
+def download_zimage_model(variant="bf16"):
+    from pathlib import Path
+    """Download Z-Image Turbo - direct URL with Range resume, VPN-node-safe."""
+    import time
+    from urllib import request, error
+    import ssl
+    
+    # Try huggingface_hub first for faster downloads, fall back to direct
+    try:
+        from huggingface_hub import hf_hub_download
+        HAS_HF = True
+    except ImportError:
+        HAS_HF = False
+    
     model_files = ZIMAGE_FILES.get(variant, ZIMAGE_FILES["bf16"])
     all_files = dict(**model_files["files"], **ZIMAGE_COMMON_FILES)
-
+    
+    expected = get_zimage_sizes(ZIMAGE_REPO)
     print(f"\n[5/5] Download Z-Image Turbo ({variant.upper()})...")
+    if expected:
+        print(f"  [i] Got {len(expected)} file sizes from API")
     print(f"  [i] {model_files['desc']}")
-    print(f"  [i] Repo: {ZIMAGE_REPO}")
     total_gb = sum(26 if "diffusion" in k else 4 if "text_encoder" in k else 0.3 for k in all_files)
-    print(f"  [i] Total ~{total_gb:.0f}GB (supports resume if interrupted)")
+    print(f"  [i] Total ~{total_gb:.0f}GB (resume-safe across VPN changes)")
     print()
-
-    # Track completed downloads
+    
     done_marker = MODELS_DIR / ".zimage_download_done.txt"
-    completed = set()
-    if done_marker.exists():
-        completed = set(done_marker.read_text("utf-8").strip().split("\n"))
-
+    completed = set(done_marker.read_text("utf-8").strip().split("\n")) if done_marker.exists() else set()
+    
     all_ok = True
-
+    
     for local_name, remote_name in all_files.items():
         marker_key = local_name
-
-        if marker_key in completed:
-            local_path = MODELS_DIR / local_name
-            if local_path.exists() and local_path.stat().st_size > 1024:
-                sz = local_path.stat().st_size / (1024**3)
-                print(f"  [OK] Already downloaded: {local_name} ({sz:.1f}GB)")
-                continue
-            else:
-                completed.discard(marker_key)
-
         local_path = MODELS_DIR / local_name
         local_path.parent.mkdir(parents=True, exist_ok=True)
-
-        # Backup partial file before retry
-        if local_path.exists():
-            partial_sz = local_path.stat().st_size
-            if partial_sz > 1024:
-                print(f"  [..] Found partial download ({partial_sz/1024**3:.1f}GB), will resume...")
-            else:
-                local_path.unlink(missing_ok=True)
-
-        max_retries = 3
-        success = False
-        for attempt in range(1, max_retries + 1):
-            if attempt > 1:
-                wait = attempt * 10
-                print(f"  [..] Retry {attempt}/{max_retries} in {wait}s...")
-                time.sleep(wait)
-
-            print(f"  [>>] ({attempt}/{max_retries}) {remote_name}")
-            try:
-                hf_hub_download(
-                    repo_id=ZIMAGE_REPO,
-                    filename=remote_name,
-                    local_dir=str(MODELS_DIR),
-                    etag_timeout=30,
-                )
-                # Move from split_files/ to correct dir
-                import shutil as _shutil
-                split_path = MODELS_DIR / remote_name
-                target_path = MODELS_DIR / local_name
-                if split_path.exists() and split_path != target_path:
-                    target_path.parent.mkdir(parents=True, exist_ok=True)
-                    _shutil.move(str(split_path), str(target_path))
-                    for _d in [MODELS_DIR / "split_files" / "diffusion_models",
-                               MODELS_DIR / "split_files" / "text_encoders",
-                               MODELS_DIR / "split_files" / "vae",
-                               MODELS_DIR / "split_files"]:
-                        try: _d.rmdir()
-                        except: pass
-
-                if target_path.exists() and target_path.stat().st_size > 1024:
-                    sz = target_path.stat().st_size / (1024**3)
-                    print(f"  [OK] Done: {local_name} ({sz:.1f}GB)")
-                    completed.add(marker_key)
-                    done_marker.write_text("\n".join(sorted(completed)), "utf-8")
-                    success = True
-                    break
-                else:
-                    print(f"  [!] File incomplete after download, retrying...")
-            except HfHubHTTPError as e:
-                print(f"  [!] HTTP Error: {e}")
-            except (OSError, ConnectionError, TimeoutError) as e:
-                print(f"  [!] Network Error: {e}")
-            except Exception as e:
-                print(f"  [!] Error: {e}")
-
-        if not success:
+        
+        # Expected sizes per file type
+        if "diffusion" in local_name or "bf16" in local_name or "fp8" in local_name:
+            min_bytes = 10 * 1024**3  # ~10GB for UNET
+        elif "text_encoder" in local_name or "qwen" in local_name.lower() or "clip" in local_name.lower():
+            min_bytes = 3 * 1024**3   # ~3GB for CLIP
+        else:
+            min_bytes = 200 * 1024**2  # ~200MB for VAE
+        
+        exp_size = expected.get(remote_name, 0)
+        if marker_key in completed and local_path.exists() and exp_size > 0 and local_path.stat().st_size == exp_size:
+            print(f"  [OK] Already downloaded: {local_name}")
+            continue
+        
+        # Direct URL
+        url = f"https://huggingface.co/{ZIMAGE_REPO}/resolve/main/{remote_name}?download=true"
+        
+        success = download_file_direct(local_path, url, remote_name, min_bytes, exp_size=exp_size)
+        
+        if not success and HAS_HF:
+            print("  [..] Direct failed, trying huggingface_hub...")
+            for attempt in range(1, 4):
+                if attempt > 1: time.sleep(attempt * 10)
+                try:
+                    hf_hub_download(ZIMAGE_REPO, remote_name, local_dir=str(MODELS_DIR))
+                    if local_path.exists() and exp_size > 0 and local_path.stat().st_size == exp_size:
+                        success = True
+                        break
+                except Exception as e:
+                    print(f"  [!] HF: {e}")
+        
+        if success:
+            sz = local_path.stat().st_size / (1024**3)
+            print(f"  [OK] Done: {local_name} ({sz:.1f}GB)")
+            completed.add(marker_key)
+            done_marker.write_text("\n".join(sorted(completed)), "utf-8")
+        else:
             all_ok = False
-            print(f"  [FAIL] {local_name} after {max_retries} attempts")
+            print(f"  [FAIL] {local_name} after all attempts")
             print(f"         Manual: https://huggingface.co/{ZIMAGE_REPO}/blob/main/{remote_name}")
-
+    
     if all_ok:
         print(f"\n  [OK] All {len(all_files)} files downloaded!")
+        Path(done_marker).unlink(missing_ok=True)
     else:
-        print(f"\n  [!] Some files failed. Re-run setup to continue from where you left off.")
-    return all_ok
-
-def setup_model_config():
-    """创建 extra_model_paths.yaml 配置"""
-    config_path = COMFYUI_DIR / "extra_model_paths.yaml"
-    
-    config_content = f"""# ComfyUI 模型路径配置
-# 自动生成 by install.py
-
-comfyui:
-    base_path: {str(COMFYUI_DIR).replace(chr(92), '/')}
-    checkpoints: models/checkpoints/
-    clip: models/clip/
-    clip_vision: models/clip_vision/
-    configs: models/configs/
-    controlnet: models/controlnet/
-    embeddings: models/embeddings/
-    loras: models/loras/
-    upscale_models: models/upscale_models/
-    vae: models/vae/
-"""
-    
-    config_path.write_text(config_content, encoding="utf-8")
-    print(f"[✓] 模型配置已创建: {config_path}")
-
-
-def save_workflows():
-    """保存 ComfyUI 工作流 JSON 文件"""
-    workflows_dir = BASE_DIR / "workflows"
-    workflows_dir.mkdir(parents=True, exist_ok=True)
-    
-    # 基础工作流
-    workflow_basic = {
-        "last_node_id": 7,
-        "last_link_id": 8,
-        "nodes": [
-            {
-                "id": 1, "type": "CheckpointLoaderSimple", "pos": [50, 100],
-                "size": [315, 98], "flags": {}, "order": 0, "mode": 0,
-                "outputs": [
-                    {"name": "MODEL", "type": "MODEL", "links": [1], "slot_index": 0},
-                    {"name": "CLIP", "type": "CLIP", "links": [2], "slot_index": 1},
-                    {"name": "VAE", "type": "VAE", "links": [3], "slot_index": 2}
-                ],
-                "properties": {"Node name for S&R": "CheckpointLoaderSimple"},
-                "widgets_values": ["z-image-turbo-fp8-aio.safetensors"]
-            },
-            {
-                "id": 2, "type": "CLIPTextEncode", "pos": [50, 300],
-                "size": [400, 200], "flags": {}, "order": 1, "mode": 0,
-                "inputs": [{"name": "clip", "type": "CLIP", "link": 2}],
-                "outputs": [{"name": "CONDITIONING", "type": "CONDITIONING", "links": [4], "slot_index": 0}],
-                "title": "正面提示词 (Positive Prompt)",
-                "widgets_values": ["masterpiece, best quality, 1girl, beautiful detailed eyes"]
-            },
-            {
-                "id": 3, "type": "CLIPTextEncode", "pos": [50, 550],
-                "size": [400, 200], "flags": {}, "order": 2, "mode": 0,
-                "inputs": [{"name": "clip", "type": "CLIP", "link": 2}],
-                "outputs": [{"name": "CONDITIONING", "type": "CONDITIONING", "links": [5], "slot_index": 0}],
-                "title": "负面提示词 (Negative Prompt)",
-                "widgets_values": ["lowres, bad anatomy, bad hands, text, error, missing fingers, worst quality"]
-            },
-            {
-                "id": 4, "type": "EmptyLatentImage", "pos": [500, 100],
-                "size": [315, 106], "flags": {}, "order": 3, "mode": 0,
-                "outputs": [{"name": "LATENT", "type": "LATENT", "links": [6], "slot_index": 0}],
-                "widgets_values": [1024, 1024, 1]
-            },
-            {
-                "id": 5, "type": "KSampler", "pos": [500, 300],
-                "size": [315, 262], "flags": {}, "order": 4, "mode": 0,
-                "inputs": [
-                    {"name": "model", "type": "MODEL", "link": 1},
-                    {"name": "positive", "type": "CONDITIONING", "link": 4},
-                    {"name": "negative", "type": "CONDITIONING", "link": 5},
-                    {"name": "latent_image", "type": "LATENT", "link": 6}
-                ],
-                "outputs": [{"name": "LATENT", "type": "LATENT", "links": [7], "slot_index": 0}],
-                "widgets_values": [123456789, "fixed", 4, 1.0, "euler", "simple", 0.0]
-            },
-            {
-                "id": 6, "type": "VAEDecode", "pos": [900, 300],
-                "size": [210, 46], "flags": {}, "order": 5, "mode": 0,
-                "inputs": [
-                    {"name": "samples", "type": "LATENT", "link": 7},
-                    {"name": "vae", "type": "VAE", "link": 3}
-                ],
-                "outputs": [{"name": "IMAGE", "type": "IMAGE", "links": [8], "slot_index": 0}]
-            },
-            {
-                "id": 7, "type": "PreviewImage", "pos": [900, 400],
-                "size": [210, 246], "flags": {}, "order": 6, "mode": 0,
-                "inputs": [{"name": "images", "type": "IMAGE", "link": 8}]
-            }
-        ],
-        "links": [
-            [1, 1, 0, 5, 0, "MODEL"], [2, 1, 1, 2, 0, "CLIP"], [3, 1, 2, 6, 1, "VAE"],
-            [4, 2, 0, 5, 1, "CONDITIONING"], [5, 3, 0, 5, 2, "CONDITIONING"],
-            [6, 4, 0, 5, 3, "LATENT"], [7, 5, 0, 6, 0, "LATENT"], [8, 6, 0, 7, 0, "IMAGE"]
-        ],
-        "groups": [], "config": {}, "version": 0.4,
-        "extra": {"workflow": {"name": "Z-Image Turbo 基础文生图"}}
-    }
-    
-    # QwenVL高级工作流
-    workflow_qwenvl = {
-        "last_node_id": 9,
-        "last_link_id": 10,
-        "nodes": [
-            {
-                "id": 1, "type": "CheckpointLoaderSimple", "pos": [50, 100],
-                "size": [315, 98], "flags": {}, "order": 0, "mode": 0,
-                "outputs": [
-                    {"name": "MODEL", "type": "MODEL", "links": [1]},
-                    {"name": "CLIP", "type": "CLIP", "links": [2]},
-                    {"name": "VAE", "type": "VAE", "links": [3]}
-                ],
-                "widgets_values": ["z-image-turbo-fp8-aio.safetensors"]
-            },
-            {
-                "id": 8, "type": "QwenVLTextEncode", "pos": [50, 250],
-                "size": [400, 180], "flags": {}, "order": 1, "mode": 0,
-                "inputs": [{"name": "clip", "type": "CLIP", "link": 2}],
-                "outputs": [{"name": "CONDITIONING", "type": "CONDITIONING", "links": [10]}],
-                "title": "QwenVL 提示词扩写 (输入关键词即可)",
-                "widgets_values": [
-                    "1girl, anime style, beautiful",
-                    "Qwen/Qwen2-VL-2B-Instruct",
-                    "You are a prompt expert. Expand these keywords into a detailed image generation prompt.",
-                    "masterpiece, best quality"
-                ]
-            },
-            {
-                "id": 3, "type": "CLIPTextEncode", "pos": [50, 480],
-                "size": [400, 150], "flags": {}, "order": 2, "mode": 0,
-                "inputs": [{"name": "clip", "type": "CLIP", "link": 2}],
-                "outputs": [{"name": "CONDITIONING", "type": "CONDITIONING", "links": [5]}],
-                "title": "负面提示词",
-                "widgets_values": ["lowres, bad anatomy, bad hands, text, error, missing fingers, worst quality"]
-            },
-            {
-                "id": 4, "type": "EmptyLatentImage", "pos": [500, 100],
-                "size": [315, 106], "flags": {}, "order": 3, "mode": 0,
-                "outputs": [{"name": "LATENT", "type": "LATENT", "links": [6]}],
-                "widgets_values": [1024, 1024, 1]
-            },
-            {
-                "id": 5, "type": "KSampler", "pos": [500, 300],
-                "size": [315, 262], "flags": {}, "order": 4, "mode": 0,
-                "inputs": [
-                    {"name": "model", "type": "MODEL", "link": 1},
-                    {"name": "positive", "type": "CONDITIONING", "link": 10},
-                    {"name": "negative", "type": "CONDITIONING", "link": 5},
-                    {"name": "latent_image", "type": "LATENT", "link": 6}
-                ],
-                "outputs": [{"name": "LATENT", "type": "LATENT", "links": [7]}],
-                "widgets_values": [123456789, "fixed", 4, 1.0, "euler", "simple", 0.0]
-            },
-            {
-                "id": 6, "type": "VAEDecode", "pos": [900, 300],
-                "size": [210, 46], "flags": {}, "order": 5, "mode": 0,
-                "inputs": [
-                    {"name": "samples", "type": "LATENT", "link": 7},
-                    {"name": "vae", "type": "VAE", "link": 3}
-                ],
-                "outputs": [{"name": "IMAGE", "type": "IMAGE", "links": [8]}]
-            },
-            {
-                "id": 7, "type": "PreviewImage", "pos": [900, 400],
-                "size": [300, 300], "flags": {}, "order": 6, "mode": 0,
-                "inputs": [{"name": "images", "type": "IMAGE", "link": 8}]
-            },
-            {
-                "id": 9, "type": "SaveImage", "pos": [900, 750],
-                "size": [315, 270], "flags": {}, "order": 7, "mode": 0,
-                "inputs": [{"name": "images", "type": "IMAGE", "link": 8}],
-                "widgets_values": ["ComfyUI"]
-            }
-        ],
-        "links": [
-            [1, 1, 0, 5, 0, "MODEL"], [2, 1, 1, 8, 0, "CLIP"], [3, 1, 2, 6, 1, "VAE"],
-            [5, 3, 0, 5, 2, "CONDITIONING"], [6, 4, 0, 5, 3, "LATENT"],
-            [7, 5, 0, 6, 0, "LATENT"], [8, 6, 0, 7, 0, "IMAGE"],
-            [10, 8, 0, 5, 1, "CONDITIONING"]
-        ],
-        "groups": [], "config": {}, "version": 0.4,
-        "extra": {"workflow": {"name": "Z-Image Turbo + QwenVL 提示词扩写"}}
-    }
-    
-    basic_path = workflows_dir / "zimage_turbo_basic.json"
-    with open(basic_path, "w", encoding="utf-8") as f:
-        json.dump(workflow_basic, f, indent=2, ensure_ascii=False)
-    print(f"[✓] 基础工作流: {basic_path}")
-    
-    qwenvl_path = workflows_dir / "zimage_turbo_qwenvl.json"
-    with open(qwenvl_path, "w", encoding="utf-8") as f:
-        json.dump(workflow_qwenvl, f, indent=2, ensure_ascii=False)
-    print(f"[✓] QwenVL工作流: {qwenvl_path}")
-
-
-def print_banner(text, style="double"):
-    """打印装饰横幅"""
-    lines = text.split("\n")
-    width = max(len(l) for l in lines) + 4
-    if style == "double":
-        top = chr(0x2554) + chr(0x2550)*(width-2) + chr(0x2557)
-        bot = chr(0x255A) + chr(0x2550)*(width-2) + chr(0x255D)
-        mid = chr(0x2551)
-    else:
-        top = bot = "="*width
-        mid = "|"
-    print(top)
-    for l in lines:
-        print(f"{mid} {l.center(width-4)} {mid}")
-    print(bot)
-
-
-
+        print(f"\n  [WARN] Some files failed. Re-run setup to resume.")
 def download_qwen_models():
     """Download Qwen LLM/VL models with resume support."""
     from huggingface_hub import snapshot_download
@@ -612,73 +438,74 @@ def download_qwen_models():
     return all_ok
 
 def main():
-    print_banner("ComfyUI + Z-Image Turbo + QwenVL 整合包\n国内镜像优化版")
+    print_banner("ComfyUI + Z-Image Turbo + QwenVL 鏁村悎鍖匼n鍥藉唴闀滃儚浼樺寲鐗?)
     
     print(f"Python: {PYTHON_EXE}")
-    print(f"安装目录: {BASE_DIR}")
-    print(f"HF镜像: {HF_MIRROR}")
-    print(f"pip镜像: {PIP_MIRROR}")
+    print(f"瀹夎鐩綍: {BASE_DIR}")
+    print(f"HF闀滃儚: {HF_MIRROR}")
+    print(f"pip闀滃儚: {PIP_MIRROR}")
     print()
     
-    # 选择模型版本
-    print("请选择 Z-Image Turbo 模型版本:")
-    print("  [1] BF16 版本 - 精度更高, 推荐16G+显存 (~12GB)")
-    print("  [2] FP8 版本 - 显存占用小, 适合8-12G显存 (~6GB)")
-    print("  [3] 跳过模型下载 (手动下载)")
+    # 閫夋嫨妯″瀷鐗堟湰
+    print("璇烽€夋嫨 Z-Image Turbo 妯″瀷鐗堟湰:")
+    print("  [1] BF16 鐗堟湰 - 绮惧害鏇撮珮, 鎺ㄨ崘16G+鏄惧瓨 (~12GB)")
+    print("  [2] FP8 鐗堟湰 - 鏄惧瓨鍗犵敤灏? 閫傚悎8-12G鏄惧瓨 (~6GB)")
+    print("  [3] 璺宠繃妯″瀷涓嬭浇 (鎵嬪姩涓嬭浇)")
     
-    choice = input("\n请输入选项 (1/2/3): ").strip()
+    choice = input("\n璇疯緭鍏ラ€夐」 (1/2/3): ").strip()
     variant_map = {"1": "bf16", "2": "fp8", "3": None}
     variant = variant_map.get(choice, "fp8")
     
-    # 执行安装步骤
+    # 鎵ц瀹夎姝ラ
     steps = [
-        ("安装 ComfyUI", install_comfyui),
-        ("安装 ComfyUI-Manager", install_comfyui_manager),
-        ("安装 QwenVL 节点", install_qwenvl_node),
-        (f"下载 Qwen LLM/VL 模型 (~13GB)" if variant else "跳过 Qwen 模型下载",
+        ("瀹夎 ComfyUI", install_comfyui),
+        ("瀹夎 ComfyUI-Manager", install_comfyui_manager),
+        ("瀹夎 QwenVL 鑺傜偣", install_qwenvl_node),
+        (f"涓嬭浇 Qwen LLM/VL 妯″瀷 (~13GB)" if variant else "璺宠繃 Qwen 妯″瀷涓嬭浇",
          lambda: download_qwen_models() if variant else True),
-        (f"下载 Z-Image Turbo 模型 ({variant.upper()})" if variant else "跳过模型下载",
+        (f"涓嬭浇 Z-Image Turbo 妯″瀷 ({variant.upper()})" if variant else "璺宠繃妯″瀷涓嬭浇",
          lambda: download_zimage_model(variant) if variant else True),
-        ("配置模型路径", setup_model_config),
-        ("保存工作流文件", lambda: save_workflows() or True),
+        ("閰嶇疆妯″瀷璺緞", setup_model_config),
+        ("淇濆瓨宸ヤ綔娴佹枃浠?, lambda: save_workflows() or True),
     ]
     
     results = {}
     for step_name, step_fn in steps:
-        print(f"\n{'─'*50}")
+        print(f"\n{'鈹€'*50}")
         print(f">> {step_name}")
-        print(f"{'─'*50}")
+        print(f"{'鈹€'*50}")
         try:
             results[step_name] = step_fn()
         except Exception as e:
-            print(f"[✗] 异常: {e}")
+            print(f"[鉁梋 寮傚父: {e}")
             results[step_name] = False
     
-    # 输出结果
-    print_banner("安装结果汇总", style="single")
+    # 杈撳嚭缁撴灉
+    print_banner("瀹夎缁撴灉姹囨€?, style="single")
     for name, ok in results.items():
         status = "[OK]" if ok else "[!!]"
         print(f"  {status} {name}")
     
-    # 手动下载提示
-    if variant and not results.get(f"下载 Z-Image Turbo 模型 ({variant.upper()})", False):
+    # 鎵嬪姩涓嬭浇鎻愮ず
+    if variant and not results.get(f"涓嬭浇 Z-Image Turbo 妯″瀷 ({variant.upper()})", False):
         model_info = ZIMAGE_MODELS[variant]
         print(f"""
 {'='*60}
-[!] 模型下载失败，请手动下载:
-    HF镜像: {HF_MIRROR}/{model_info['repo']}/resolve/main/{model_info['file']}
-    HF原站: https://huggingface.co/{model_info['repo']}/resolve/main/{model_info['file']}
+[!] 妯″瀷涓嬭浇澶辫触锛岃鎵嬪姩涓嬭浇:
+    HF闀滃儚: {HF_MIRROR}/{model_info['repo']}/resolve/main/{model_info['file']}
+    HF鍘熺珯: https://huggingface.co/{model_info['repo']}/resolve/main/{model_info['file']}
     
-    放置到: {CHECKPOINT_DIR / model_info['name']}
+    鏀剧疆鍒? {CHECKPOINT_DIR / model_info['name']}
 {'='*60}""")
     
-    # 完成
-    print_banner(f"""安装完成!
-启动: 双击 start.bat 或在终端运行:
+    # 瀹屾垚
+    print_banner(f"""瀹夎瀹屾垚!
+鍚姩: 鍙屽嚮 start.bat 鎴栧湪缁堢杩愯:
   cd {COMFYUI_DIR}
   python main.py
-然后打开 http://127.0.0.1:8188""")
+鐒跺悗鎵撳紑 http://127.0.0.1:8188""")
 
 
 if __name__ == "__main__":
     main()
+

@@ -1,7 +1,7 @@
 {
   "version": 0.4,
-  "last_node_id": 15,
-  "last_link_id": 13,
+  "last_node_id": 10,
+  "last_link_id": 10,
   "nodes": [
     {
       "id": 1,
@@ -28,7 +28,7 @@
         }
       ],
       "widgets_values": [
-        "z_image_turbo_bf16.safetensors",
+        "anima-base-v1.0.safetensors",
         "default"
       ],
       "properties": {
@@ -61,9 +61,10 @@
         }
       ],
       "widgets_values": [
-        "qwen_3_4b.safetensors",
+        "qwen_3_06b_base.safetensors",
         "qwen_image"
       ],
+      "title": "CLIP (qwen_image)",
       "properties": {
         "Node name for S&R": "CLIPLoader"
       }
@@ -87,31 +88,106 @@
           "name": "VAE",
           "type": "VAE",
           "links": [
-            4
+            4,
+            5
           ],
           "slot_index": 0
         }
       ],
       "widgets_values": [
-        "ae.safetensors"
+        "qwen_image_vae.safetensors"
       ],
+      "title": "VAE (qwen_image_vae)",
       "properties": {
         "Node name for S&R": "VAELoader"
       }
     },
     {
       "id": 4,
+      "type": "LoadImage",
+      "pos": [
+        50,
+        380
+      ],
+      "size": [
+        315,
+        314
+      ],
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            6
+          ],
+          "slot_index": 0
+        }
+      ],
+      "title": "Reference Image",
+      "widgets_values": [
+        "reference.png",
+        "image"
+      ],
+      "properties": {
+        "Node name for S&R": "LoadImage"
+      }
+    },
+    {
+      "id": 5,
+      "type": "VAEEncode",
+      "pos": [
+        430,
+        420
+      ],
+      "size": [
+        210,
+        46
+      ],
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "pixels",
+          "type": "IMAGE",
+          "link": 6
+        },
+        {
+          "name": "vae",
+          "type": "VAE",
+          "link": 4
+        }
+      ],
+      "outputs": [
+        {
+          "name": "LATENT",
+          "type": "LATENT",
+          "links": [
+            7
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "VAEEncode"
+      }
+    },
+    {
+      "id": 6,
       "type": "CLIPTextEncode",
       "pos": [
-        450,
+        430,
         50
       ],
       "size": [
         450,
-        150
+        120
       ],
       "flags": {},
-      "order": 3,
+      "order": 5,
       "mode": 0,
       "inputs": [
         {
@@ -125,29 +201,29 @@
           "name": "CONDITIONING",
           "type": "CONDITIONING",
           "links": [
-            5
+            8
           ],
           "slot_index": 0
         }
       ],
-      "title": "Positive (use SAME prompt, different seeds)",
+      "title": "Positive (new scene/mood)",
       "widgets_values": [
-        "medium full shot, young woman side lying on white bed, sheer white stockings, warm backlight, photorealistic"
+        "masterpiece, best quality, score_7, safe, 1girl, white sailor uniform, running through rain, wet hair, puddle splashes, overcast sky"
       ]
     },
     {
-      "id": 5,
+      "id": 7,
       "type": "CLIPTextEncode",
       "pos": [
-        450,
-        230
+        430,
+        200
       ],
       "size": [
         450,
-        100
+        90
       ],
       "flags": {},
-      "order": 4,
+      "order": 6,
       "mode": 0,
       "inputs": [
         {
@@ -161,45 +237,50 @@
           "name": "CONDITIONING",
           "type": "CONDITIONING",
           "links": [
-            6
+            9
           ],
           "slot_index": 0
         }
       ],
       "title": "Negative Prompt",
       "widgets_values": [
-        "lowres, bad anatomy, bad hands, text, error, missing fingers, extra limbs, watermark, blurry, deformed"
+        "worst quality, low quality, score_1, score_2, score_3, artist name, bad anatomy, bad hands, text, error, watermark, realistic, photorealistic"
       ]
     },
     {
-      "id": 6,
-      "type": "EmptySD3LatentImage",
+      "id": 8,
+      "type": "KSampler",
       "pos": [
-        450,
-        370
+        700,
+        50
       ],
       "size": [
         315,
-        106
+        220
       ],
       "flags": {},
-      "order": 5,
+      "order": 7,
       "mode": 0,
       "inputs": [
         {
-          "name": "width",
-          "type": "INT",
-          "link": 7
+          "name": "model",
+          "type": "MODEL",
+          "link": 1
         },
         {
-          "name": "height",
-          "type": "INT",
+          "name": "positive",
+          "type": "CONDITIONING",
           "link": 8
         },
         {
-          "name": "batch_size",
-          "type": "INT",
+          "name": "negative",
+          "type": "CONDITIONING",
           "link": 9
+        },
+        {
+          "name": "latent_image",
+          "type": "LATENT",
+          "link": 7
         }
       ],
       "outputs": [
@@ -212,72 +293,22 @@
           "slot_index": 0
         }
       ],
+      "title": "Sampler (denoise 0.45 = keep face)",
       "widgets_values": [
-        4
+        123456789,
+        "fixed",
+        35,
+        4.5,
+        "er_sde",
+        "normal",
+        0.7
       ]
     },
     {
-      "id": 7,
-      "type": "KSampler",
-      "pos": [
-        960,
-        50
-      ],
-      "size": [
-        315,
-        220
-      ],
-      "flags": {},
-      "order": 6,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "model",
-          "type": "MODEL",
-          "link": 1
-        },
-        {
-          "name": "positive",
-          "type": "CONDITIONING",
-          "link": 5
-        },
-        {
-          "name": "negative",
-          "type": "CONDITIONING",
-          "link": 6
-        },
-        {
-          "name": "latent_image",
-          "type": "LATENT",
-          "link": 10
-        }
-      ],
-      "outputs": [
-        {
-          "name": "LATENT",
-          "type": "LATENT",
-          "links": [
-            11
-          ],
-          "slot_index": 0
-        }
-      ],
-      "title": "Sampler (seed=randomize for batch)",
-      "widgets_values": [
-        0,
-        "randomize",
-        8,
-        1.0,
-        "euler",
-        "beta",
-        1.0
-      ]
-    },
-    {
-      "id": 8,
+      "id": 9,
       "type": "VAEDecode",
       "pos": [
-        1330,
+        1070,
         50
       ],
       "size": [
@@ -285,18 +316,18 @@
         46
       ],
       "flags": {},
-      "order": 7,
+      "order": 8,
       "mode": 0,
       "inputs": [
         {
           "name": "samples",
           "type": "LATENT",
-          "link": 11
+          "link": 10
         },
         {
           "name": "vae",
           "type": "VAE",
-          "link": 4
+          "link": 5
         }
       ],
       "outputs": [
@@ -304,59 +335,22 @@
           "name": "IMAGE",
           "type": "IMAGE",
           "links": [
-            12
+            11
           ],
           "slot_index": 0
         }
-      ]
-    },
-    {
-      "id": 9,
-      "type": "ImageFromBatch",
-      "pos": [
-        1330,
-        130
-      ],
-      "size": [
-        210,
-        58
-      ],
-      "flags": {},
-      "order": 8,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "image",
-          "type": "IMAGE",
-          "link": 12
-        }
-      ],
-      "outputs": [
-        {
-          "name": "IMAGE",
-          "type": "IMAGE",
-          "links": [
-            13
-          ],
-          "slot_index": 0
-        }
-      ],
-      "title": "Pick image from batch",
-      "widgets_values": [
-        0,
-        1
       ]
     },
     {
       "id": 10,
       "type": "PreviewImage",
       "pos": [
-        1600,
-        50
+        1070,
+        130
       ],
       "size": [
         350,
-        400
+        450
       ],
       "flags": {},
       "order": 9,
@@ -365,115 +359,10 @@
         {
           "name": "images",
           "type": "IMAGE",
-          "link": 13
+          "link": 11
         }
       ],
       "outputs": []
-    },
-    {
-      "id": 13,
-      "type": "PrimitiveNode",
-      "pos": [
-        450,
-        510
-      ],
-      "size": [
-        210,
-        82
-      ],
-      "flags": {},
-      "order": 12,
-      "mode": 0,
-      "inputs": [],
-      "outputs": [
-        {
-          "name": "INT",
-          "type": "INT",
-          "widget": {
-            "name": "width"
-          },
-          "links": [
-            7
-          ]
-        }
-      ],
-      "title": "Width",
-      "properties": {
-        "Run widget replace on values": false
-      },
-      "widgets_values": [
-        768
-      ]
-    },
-    {
-      "id": 14,
-      "type": "PrimitiveNode",
-      "pos": [
-        450,
-        610
-      ],
-      "size": [
-        210,
-        82
-      ],
-      "flags": {},
-      "order": 13,
-      "mode": 0,
-      "inputs": [],
-      "outputs": [
-        {
-          "name": "INT",
-          "type": "INT",
-          "widget": {
-            "name": "height"
-          },
-          "links": [
-            8
-          ]
-        }
-      ],
-      "title": "Height",
-      "properties": {
-        "Run widget replace on values": false
-      },
-      "widgets_values": [
-        1360
-      ]
-    },
-    {
-      "id": 15,
-      "type": "PrimitiveNode",
-      "pos": [
-        450,
-        710
-      ],
-      "size": [
-        210,
-        82
-      ],
-      "flags": {},
-      "order": 14,
-      "mode": 0,
-      "inputs": [],
-      "outputs": [
-        {
-          "name": "INT",
-          "type": "INT",
-          "widget": {
-            "name": "batch_size"
-          },
-          "links": [
-            9
-          ]
-        }
-      ],
-      "title": "Batch Size (how many seeds)",
-      "properties": {
-        "Run widget replace on values": false
-      },
-      "widgets_values": [
-        4
-      ]
     }
   ],
   "links": [
@@ -481,7 +370,7 @@
       1,
       1,
       0,
-      7,
+      8,
       0,
       "MODEL"
     ],
@@ -489,7 +378,7 @@
       2,
       2,
       0,
-      4,
+      6,
       0,
       "CLIP"
     ],
@@ -497,7 +386,7 @@
       3,
       2,
       0,
-      5,
+      7,
       0,
       "CLIP"
     ],
@@ -505,76 +394,60 @@
       4,
       3,
       0,
-      8,
+      5,
       1,
       "VAE"
     ],
     [
       5,
+      3,
+      0,
+      9,
+      1,
+      "VAE"
+    ],
+    [
+      6,
       4,
       0,
-      7,
-      1,
-      "CONDITIONING"
-    ],
-    [
-      6,
       5,
-      0,
-      7,
-      2,
-      "CONDITIONING"
-    ],
-    [
-      7,
-      13,
-      0,
-      6,
-      0,
-      "INT"
-    ],
-    [
-      8,
-      14,
-      0,
-      6,
-      1,
-      "INT"
-    ],
-    [
-      9,
-      15,
-      0,
-      6,
-      2,
-      "INT"
-    ],
-    [
-      10,
-      6,
-      0,
-      7,
-      3,
-      "LATENT"
-    ],
-    [
-      11,
-      7,
-      0,
-      8,
-      0,
-      "LATENT"
-    ],
-    [
-      12,
-      8,
-      0,
-      9,
       0,
       "IMAGE"
     ],
     [
-      13,
+      7,
+      5,
+      0,
+      8,
+      3,
+      "LATENT"
+    ],
+    [
+      8,
+      6,
+      0,
+      8,
+      1,
+      "CONDITIONING"
+    ],
+    [
+      9,
+      7,
+      0,
+      8,
+      2,
+      "CONDITIONING"
+    ],
+    [
+      10,
+      8,
+      0,
+      9,
+      0,
+      "LATENT"
+    ],
+    [
+      11,
       9,
       0,
       10,
@@ -586,7 +459,7 @@
   "config": {},
   "extra": {
     "workflow": {
-      "name": "Seed Explorer | Batch 4 images, pick best, grid view"
+      "name": "Anima Img2Img | Reference + prompt, denoise 0.45"
     }
   }
 }

@@ -1,7 +1,7 @@
 {
   "version": 0.4,
-  "last_node_id": 15,
-  "last_link_id": 13,
+  "last_node_id": 10,
+  "last_link_id": 12,
   "nodes": [
     {
       "id": 1,
@@ -28,7 +28,7 @@
         }
       ],
       "widgets_values": [
-        "z_image_turbo_bf16.safetensors",
+        "anima-base-v1.0.safetensors",
         "default"
       ],
       "properties": {
@@ -61,9 +61,10 @@
         }
       ],
       "widgets_values": [
-        "qwen_3_4b.safetensors",
+        "qwen_3_06b_base.safetensors",
         "qwen_image"
       ],
+      "title": "CLIP (qwen_image type - Qwen-based)",
       "properties": {
         "Node name for S&R": "CLIPLoader"
       }
@@ -93,8 +94,9 @@
         }
       ],
       "widgets_values": [
-        "ae.safetensors"
+        "qwen_image_vae.safetensors"
       ],
+      "title": "VAE (qwen_image_vae)",
       "properties": {
         "Node name for S&R": "VAELoader"
       }
@@ -130,9 +132,9 @@
           "slot_index": 0
         }
       ],
-      "title": "Positive (use SAME prompt, different seeds)",
+      "title": "Positive Prompt",
       "widgets_values": [
-        "medium full shot, young woman side lying on white bed, sheer white stockings, warm backlight, photorealistic"
+        "masterpiece, best quality, score_7, safe, 1girl, white sailor uniform, running through rain, wet hair, puddle splashes, overcast sky"
       ]
     },
     {
@@ -168,7 +170,7 @@
       ],
       "title": "Negative Prompt",
       "widgets_values": [
-        "lowres, bad anatomy, bad hands, text, error, missing fingers, extra limbs, watermark, blurry, deformed"
+        "worst quality, low quality, score_1, score_2, score_3, artist name, bad anatomy, bad hands, text, error, watermark, realistic, photorealistic"
       ]
     },
     {
@@ -195,11 +197,6 @@
           "name": "height",
           "type": "INT",
           "link": 8
-        },
-        {
-          "name": "batch_size",
-          "type": "INT",
-          "link": 9
         }
       ],
       "outputs": [
@@ -207,13 +204,13 @@
           "name": "LATENT",
           "type": "LATENT",
           "links": [
-            10
+            9
           ],
           "slot_index": 0
         }
       ],
       "widgets_values": [
-        4
+        1
       ]
     },
     {
@@ -249,7 +246,7 @@
         {
           "name": "latent_image",
           "type": "LATENT",
-          "link": 10
+          "link": 9
         }
       ],
       "outputs": [
@@ -257,19 +254,18 @@
           "name": "LATENT",
           "type": "LATENT",
           "links": [
-            11
+            10
           ],
           "slot_index": 0
         }
       ],
-      "title": "Sampler (seed=randomize for batch)",
       "widgets_values": [
-        0,
-        "randomize",
-        8,
-        1.0,
-        "euler",
-        "beta",
+        123456789,
+        "fixed",
+        35,
+        4.5,
+        "er_sde",
+        "normal",
         1.0
       ]
     },
@@ -291,7 +287,7 @@
         {
           "name": "samples",
           "type": "LATENT",
-          "link": 11
+          "link": 10
         },
         {
           "name": "vae",
@@ -304,7 +300,7 @@
           "name": "IMAGE",
           "type": "IMAGE",
           "links": [
-            12
+            11
           ],
           "slot_index": 0
         }
@@ -312,66 +308,29 @@
     },
     {
       "id": 9,
-      "type": "ImageFromBatch",
+      "type": "PreviewImage",
       "pos": [
         1330,
         130
-      ],
-      "size": [
-        210,
-        58
-      ],
-      "flags": {},
-      "order": 8,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "image",
-          "type": "IMAGE",
-          "link": 12
-        }
-      ],
-      "outputs": [
-        {
-          "name": "IMAGE",
-          "type": "IMAGE",
-          "links": [
-            13
-          ],
-          "slot_index": 0
-        }
-      ],
-      "title": "Pick image from batch",
-      "widgets_values": [
-        0,
-        1
-      ]
-    },
-    {
-      "id": 10,
-      "type": "PreviewImage",
-      "pos": [
-        1600,
-        50
       ],
       "size": [
         350,
         400
       ],
       "flags": {},
-      "order": 9,
+      "order": 8,
       "mode": 0,
       "inputs": [
         {
           "name": "images",
           "type": "IMAGE",
-          "link": 13
+          "link": 11
         }
       ],
       "outputs": []
     },
     {
-      "id": 13,
+      "id": 10,
       "type": "PrimitiveNode",
       "pos": [
         450,
@@ -382,7 +341,7 @@
         82
       ],
       "flags": {},
-      "order": 12,
+      "order": 9,
       "mode": 0,
       "inputs": [],
       "outputs": [
@@ -397,27 +356,27 @@
           ]
         }
       ],
-      "title": "Width",
+      "title": "Width (multiple of 16)",
       "properties": {
         "Run widget replace on values": false
       },
       "widgets_values": [
-        768
+        1024
       ]
     },
     {
-      "id": 14,
+      "id": 11,
       "type": "PrimitiveNode",
       "pos": [
-        450,
-        610
+        700,
+        510
       ],
       "size": [
         210,
         82
       ],
       "flags": {},
-      "order": 13,
+      "order": 10,
       "mode": 0,
       "inputs": [],
       "outputs": [
@@ -432,47 +391,12 @@
           ]
         }
       ],
-      "title": "Height",
+      "title": "Height (multiple of 16)",
       "properties": {
         "Run widget replace on values": false
       },
       "widgets_values": [
-        1360
-      ]
-    },
-    {
-      "id": 15,
-      "type": "PrimitiveNode",
-      "pos": [
-        450,
-        710
-      ],
-      "size": [
-        210,
-        82
-      ],
-      "flags": {},
-      "order": 14,
-      "mode": 0,
-      "inputs": [],
-      "outputs": [
-        {
-          "name": "INT",
-          "type": "INT",
-          "widget": {
-            "name": "batch_size"
-          },
-          "links": [
-            9
-          ]
-        }
-      ],
-      "title": "Batch Size (how many seeds)",
-      "properties": {
-        "Run widget replace on values": false
-      },
-      "widgets_values": [
-        4
+        1024
       ]
     }
   ],
@@ -527,7 +451,7 @@
     ],
     [
       7,
-      13,
+      10,
       0,
       6,
       0,
@@ -535,7 +459,7 @@
     ],
     [
       8,
-      14,
+      11,
       0,
       6,
       1,
@@ -543,14 +467,6 @@
     ],
     [
       9,
-      15,
-      0,
-      6,
-      2,
-      "INT"
-    ],
-    [
-      10,
       6,
       0,
       7,
@@ -558,7 +474,7 @@
       "LATENT"
     ],
     [
-      11,
+      10,
       7,
       0,
       8,
@@ -566,18 +482,10 @@
       "LATENT"
     ],
     [
-      12,
+      11,
       8,
       0,
       9,
-      0,
-      "IMAGE"
-    ],
-    [
-      13,
-      9,
-      0,
-      10,
       0,
       "IMAGE"
     ]
@@ -586,7 +494,7 @@
   "config": {},
   "extra": {
     "workflow": {
-      "name": "Seed Explorer | Batch 4 images, pick best, grid view"
+      "name": "Anima Basic T2I | Test workflow"
     }
   }
 }
