@@ -1,6 +1,7 @@
 {
-  "last_node_id": 14,
-  "last_link_id": 16,
+  "version": 0.4,
+  "last_node_id": 13,
+  "last_link_id": 13,
   "nodes": [
     {
       "id": 1,
@@ -22,7 +23,8 @@
           "type": "MODEL",
           "links": [
             1
-          ]
+          ],
+          "slot_index": 0
         }
       ],
       "widgets_values": [
@@ -52,8 +54,10 @@
           "name": "CLIP",
           "type": "CLIP",
           "links": [
-            2
-          ]
+            2,
+            3
+          ],
+          "slot_index": 0
         }
       ],
       "widgets_values": [
@@ -69,7 +73,7 @@
       "type": "VAELoader",
       "pos": [
         50,
-        280
+        270
       ],
       "size": [
         315,
@@ -83,8 +87,9 @@
           "name": "VAE",
           "type": "VAE",
           "links": [
-            3
-          ]
+            4
+          ],
+          "slot_index": 0
         }
       ],
       "widgets_values": [
@@ -95,15 +100,15 @@
       }
     },
     {
-      "id": 11,
+      "id": 4,
       "type": "AILab_QwenVL_PromptEnhancer",
       "pos": [
-        450,
-        50
+        50,
+        380
       ],
       "size": [
         420,
-        310
+        280
       ],
       "flags": {},
       "order": 3,
@@ -113,18 +118,19 @@
           "name": "STRING",
           "type": "STRING",
           "links": [
-            12
-          ]
+            5
+          ],
+          "slot_index": 0
         }
       ],
-      "title": "Keywords: Short tags (e.g. 1girl, side lying, white stockings, warm light)",
+      "title": "关键词扩写 (输入短词即可)",
       "widgets_values": [
         "Qwen3-0.6B",
         "None (FP16)",
         "auto",
         false,
         "auto",
-        "chinese girl, red qipao, full body, courtyard, soft light",
+        "1girl, beautiful detailed face, soft lighting, white stockings",
         "📝 Enhance",
         "",
         256,
@@ -132,21 +138,18 @@
         0.9,
         1.1,
         true,
-        42
-      ],
-      "properties": {
-        "Node name for S&R": "AILab_QwenVL_PromptEnhancer"
-      }
+        12345
+      ]
     },
     {
-      "id": 12,
+      "id": 5,
       "type": "CLIPTextEncode",
       "pos": [
-        920,
-        50
+        520,
+        380
       ],
       "size": [
-        400,
+        420,
         80
       ],
       "flags": {},
@@ -164,7 +167,7 @@
           "widget": {
             "name": "text"
           },
-          "link": 12
+          "link": 5
         }
       ],
       "outputs": [
@@ -172,24 +175,22 @@
           "name": "CONDITIONING",
           "type": "CONDITIONING",
           "links": [
-            13
-          ]
+            6
+          ],
+          "slot_index": 0
         }
       ],
-      "title": "Positive: Auto-expanded by QwenVL (do NOT edit)",
-      "properties": {
-        "Node name for S&R": "CLIPTextEncode"
-      }
+      "title": "正面提示词 (Qwen自动扩写)"
     },
     {
-      "id": 5,
+      "id": 6,
       "type": "CLIPTextEncode",
       "pos": [
-        920,
-        160
+        520,
+        490
       ],
       "size": [
-        400,
+        420,
         80
       ],
       "flags": {},
@@ -199,7 +200,7 @@
         {
           "name": "clip",
           "type": "CLIP",
-          "link": 2
+          "link": 3
         }
       ],
       "outputs": [
@@ -207,191 +208,30 @@
           "name": "CONDITIONING",
           "type": "CONDITIONING",
           "links": [
-            5
-          ]
+            7
+          ],
+          "slot_index": 0
         }
       ],
-      "title": "Negative (anatomy, quality, watermark)",
+      "title": "负面提示词",
       "widgets_values": [
-        "lowres, bad anatomy, bad hands, text, error, missing fingers"
-      ],
-      "properties": {
-        "Node name for S&R": "CLIPTextEncode"
-      }
-    },
-    {
-      "id": 6,
-      "type": "EmptySD3LatentImage",
-      "pos": [
-        920,
-        280
-      ],
-      "size": [
-        315,
-        106
-      ],
-      "flags": {},
-      "order": 6,
-      "mode": 0,
-      "outputs": [
-        {
-          "name": "LATENT",
-          "type": "LATENT",
-          "links": [
-            6
-          ]
-        }
-      ],
-      "widgets_values": [
-        1
-      ],
-      "properties": {
-        "Node name for S&R": "EmptySD3LatentImage"
-      },
-      "inputs": [
-        {
-          "name": "width",
-          "type": "INT",
-          "link": 15
-        },
-        {
-          "name": "height",
-          "type": "INT",
-          "link": 16
-        }
+        "lowres, bad anatomy, bad hands, text, error, missing fingers, extra digit, fewer digits, cropped, worst quality"
       ]
     },
     {
       "id": 7,
-      "type": "KSampler",
-      "pos": [
-        920,
-        420
-      ],
-      "size": [
-        315,
-        262
-      ],
-      "flags": {},
-      "order": 7,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "model",
-          "type": "MODEL",
-          "link": 1
-        },
-        {
-          "name": "positive",
-          "type": "CONDITIONING",
-          "link": 13
-        },
-        {
-          "name": "negative",
-          "type": "CONDITIONING",
-          "link": 5
-        },
-        {
-          "name": "latent_image",
-          "type": "LATENT",
-          "link": 6
-        }
-      ],
-      "outputs": [
-        {
-          "name": "LATENT",
-          "type": "LATENT",
-          "links": [
-            7
-          ]
-        }
-      ],
-      "widgets_values": [
-        123456789,
-        "fixed",
-        4,
-        1.0,
-        "euler",
-        "simple",
-        1.0
-      ],
-      "properties": {
-        "Node name for S&R": "KSampler"
-      }
-    },
-    {
-      "id": 8,
-      "type": "VAEDecode",
-      "pos": [
-        1300,
-        420
-      ],
-      "size": [
-        210,
-        46
-      ],
-      "flags": {},
-      "order": 8,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "samples",
-          "type": "LATENT",
-          "link": 7
-        },
-        {
-          "name": "vae",
-          "type": "VAE",
-          "link": 3
-        }
-      ],
-      "outputs": [
-        {
-          "name": "IMAGE",
-          "type": "IMAGE",
-          "links": [
-            8
-          ]
-        }
-      ]
-    },
-    {
-      "id": 9,
-      "type": "PreviewImage",
-      "pos": [
-        1300,
-        500
-      ],
-      "size": [
-        300,
-        300
-      ],
-      "flags": {},
-      "order": 9,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "images",
-          "type": "IMAGE",
-          "link": 8
-        }
-      ]
-    },
-    {
-      "id": 13,
       "type": "PrimitiveNode",
       "pos": [
-        450,
-        580
+        420,
+        620
       ],
       "size": [
         210,
         82
       ],
       "flags": {},
-      "order": 999,
+      "order": 6,
       "mode": 0,
-      "inputs": [],
       "outputs": [
         {
           "name": "INT",
@@ -400,7 +240,7 @@
             "name": "width"
           },
           "links": [
-            15
+            8
           ]
         }
       ],
@@ -413,20 +253,19 @@
       ]
     },
     {
-      "id": 14,
+      "id": 8,
       "type": "PrimitiveNode",
       "pos": [
-        450,
-        680
+        680,
+        620
       ],
       "size": [
         210,
         82
       ],
       "flags": {},
-      "order": 999,
+      "order": 7,
       "mode": 0,
-      "inputs": [],
       "outputs": [
         {
           "name": "INT",
@@ -435,7 +274,7 @@
             "name": "height"
           },
           "links": [
-            16
+            9
           ]
         }
       ],
@@ -446,6 +285,161 @@
       "widgets_values": [
         1024
       ]
+    },
+    {
+      "id": 9,
+      "type": "EmptySD3LatentImage",
+      "pos": [
+        420,
+        740
+      ],
+      "size": [
+        315,
+        106
+      ],
+      "flags": {},
+      "order": 8,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "width",
+          "type": "INT",
+          "link": 8
+        },
+        {
+          "name": "height",
+          "type": "INT",
+          "link": 9
+        }
+      ],
+      "outputs": [
+        {
+          "name": "LATENT",
+          "type": "LATENT",
+          "links": [
+            11
+          ],
+          "slot_index": 0
+        }
+      ],
+      "widgets_values": [
+        1
+      ]
+    },
+    {
+      "id": 10,
+      "type": "KSampler",
+      "pos": [
+        980,
+        380
+      ],
+      "size": [
+        315,
+        262
+      ],
+      "flags": {},
+      "order": 9,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model",
+          "type": "MODEL",
+          "link": 1
+        },
+        {
+          "name": "positive",
+          "type": "CONDITIONING",
+          "link": 6
+        },
+        {
+          "name": "negative",
+          "type": "CONDITIONING",
+          "link": 7
+        },
+        {
+          "name": "latent_image",
+          "type": "LATENT",
+          "link": 11
+        }
+      ],
+      "outputs": [
+        {
+          "name": "LATENT",
+          "type": "LATENT",
+          "links": [
+            12
+          ],
+          "slot_index": 0
+        }
+      ],
+      "widgets_values": [
+        123456789,
+        "fixed",
+        8,
+        1.0,
+        "euler",
+        "beta",
+        1.0
+      ]
+    },
+    {
+      "id": 11,
+      "type": "VAEDecode",
+      "pos": [
+        1360,
+        380
+      ],
+      "size": [
+        210,
+        46
+      ],
+      "flags": {},
+      "order": 10,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "samples",
+          "type": "LATENT",
+          "link": 12
+        },
+        {
+          "name": "vae",
+          "type": "VAE",
+          "link": 4
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            13
+          ],
+          "slot_index": 0
+        }
+      ]
+    },
+    {
+      "id": 12,
+      "type": "PreviewImage",
+      "pos": [
+        1360,
+        470
+      ],
+      "size": [
+        300,
+        300
+      ],
+      "flags": {},
+      "order": 11,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 13
+        }
+      ]
     }
   ],
   "links": [
@@ -453,7 +447,7 @@
       1,
       1,
       0,
-      7,
+      10,
       0,
       "MODEL"
     ],
@@ -461,89 +455,96 @@
       2,
       2,
       0,
-      12,
+      5,
       0,
       "CLIP"
     ],
     [
       3,
+      2,
+      0,
+      6,
+      0,
+      "CLIP"
+    ],
+    [
+      4,
       3,
       0,
-      8,
+      11,
       1,
       "VAE"
     ],
     [
       5,
+      4,
+      0,
       5,
-      0,
-      7,
-      2,
-      "CONDITIONING"
-    ],
-    [
-      6,
-      6,
-      0,
-      7,
-      3,
-      "LATENT"
-    ],
-    [
-      7,
-      7,
-      0,
-      8,
-      0,
-      "LATENT"
-    ],
-    [
-      8,
-      8,
-      0,
-      9,
-      0,
-      "IMAGE"
-    ],
-    [
-      12,
-      11,
-      0,
-      12,
       1,
       "STRING"
     ],
     [
-      13,
-      12,
+      6,
+      5,
       0,
-      7,
+      10,
       1,
       "CONDITIONING"
     ],
     [
-      15,
-      13,
-      0,
+      7,
       6,
+      0,
+      10,
+      2,
+      "CONDITIONING"
+    ],
+    [
+      8,
+      7,
+      0,
+      9,
       0,
       "INT"
     ],
     [
-      16,
-      14,
+      9,
+      8,
       0,
-      6,
+      9,
       1,
       "INT"
+    ],
+    [
+      11,
+      9,
+      0,
+      10,
+      3,
+      "LATENT"
+    ],
+    [
+      12,
+      10,
+      0,
+      11,
+      0,
+      "LATENT"
+    ],
+    [
+      13,
+      11,
+      0,
+      12,
+      0,
+      "IMAGE"
     ]
   ],
   "groups": [],
   "config": {},
-  "version": 0.4,
   "extra": {
     "workflow": {
-      "name": "QwenVL Keyword Expand -> Image | QwenVL keyword expand | keywords -> AI full prompt -> generate | 1024x1024"
+      "name": "Z-Image Turbo + QwenVL 关键词扩写"
     }
   }
 }

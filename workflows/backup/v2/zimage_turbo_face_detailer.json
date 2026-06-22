@@ -1,7 +1,7 @@
 {
   "version": 0.4,
-  "last_node_id": 10,
-  "last_link_id": 10,
+  "last_node_id": 13,
+  "last_link_id": 16,
   "nodes": [
     {
       "id": 1,
@@ -87,7 +87,9 @@
           "name": "VAE",
           "type": "VAE",
           "links": [
-            4
+            4,
+            5,
+            6
           ],
           "slot_index": 0
         }
@@ -101,17 +103,90 @@
     },
     {
       "id": 4,
-      "type": "CLIPTextEncode",
+      "type": "LoadImage",
       "pos": [
         50,
         380
       ],
       "size": [
-        420,
-        180
+        315,
+        314
       ],
       "flags": {},
       "order": 3,
+      "mode": 0,
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            7
+          ],
+          "slot_index": 0
+        }
+      ],
+      "title": "Reference Photo (YOUR face)",
+      "widgets_values": [
+        "reference.png",
+        "image"
+      ],
+      "properties": {
+        "Node name for S&R": "LoadImage"
+      }
+    },
+    {
+      "id": 5,
+      "type": "VAEEncode",
+      "pos": [
+        430,
+        420
+      ],
+      "size": [
+        210,
+        46
+      ],
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "pixels",
+          "type": "IMAGE",
+          "link": 7
+        },
+        {
+          "name": "vae",
+          "type": "VAE",
+          "link": 4
+        }
+      ],
+      "outputs": [
+        {
+          "name": "LATENT",
+          "type": "LATENT",
+          "links": [
+            8
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "VAEEncode"
+      }
+    },
+    {
+      "id": 6,
+      "type": "CLIPTextEncode",
+      "pos": [
+        430,
+        50
+      ],
+      "size": [
+        450,
+        130
+      ],
+      "flags": {},
+      "order": 5,
       "mode": 0,
       "inputs": [
         {
@@ -125,29 +200,29 @@
           "name": "CONDITIONING",
           "type": "CONDITIONING",
           "links": [
-            5
+            9
           ],
           "slot_index": 0
         }
       ],
-      "title": "正面提示词 (Positive Prompt)",
+      "title": "Stage 1: Positive (new scene, face from ref)",
       "widgets_values": [
-        "masterpiece, best quality, 1girl, beautiful detailed eyes"
+        "medium full shot, young woman side lying on white bed, sheer white stockings, warm golden backlight, photorealistic, soft lighting"
       ]
     },
     {
-      "id": 5,
+      "id": 7,
       "type": "CLIPTextEncode",
       "pos": [
-        50,
-        590
+        430,
+        210
       ],
       "size": [
-        420,
-        180
+        450,
+        90
       ],
       "flags": {},
-      "order": 4,
+      "order": 6,
       "mode": 0,
       "inputs": [
         {
@@ -161,137 +236,29 @@
           "name": "CONDITIONING",
           "type": "CONDITIONING",
           "links": [
-            6
-          ],
-          "slot_index": 0
-        }
-      ],
-      "title": "负面提示词 (Negative Prompt)",
-      "widgets_values": [
-        "lowres, bad anatomy, bad hands, text, error, missing fingers, worst quality"
-      ]
-    },
-    {
-      "id": 6,
-      "type": "PrimitiveNode",
-      "pos": [
-        500,
-        50
-      ],
-      "size": [
-        210,
-        82
-      ],
-      "flags": {},
-      "order": 5,
-      "mode": 0,
-      "outputs": [
-        {
-          "name": "INT",
-          "type": "INT",
-          "widget": {
-            "name": "width"
-          },
-          "links": [
-            7
-          ]
-        }
-      ],
-      "title": "Width",
-      "properties": {
-        "Run widget replace on values": false
-      },
-      "widgets_values": [
-        1024
-      ]
-    },
-    {
-      "id": 7,
-      "type": "PrimitiveNode",
-      "pos": [
-        760,
-        50
-      ],
-      "size": [
-        210,
-        82
-      ],
-      "flags": {},
-      "order": 6,
-      "mode": 0,
-      "outputs": [
-        {
-          "name": "INT",
-          "type": "INT",
-          "widget": {
-            "name": "height"
-          },
-          "links": [
-            8
-          ]
-        }
-      ],
-      "title": "Height",
-      "properties": {
-        "Run widget replace on values": false
-      },
-      "widgets_values": [
-        1024
-      ]
-    },
-    {
-      "id": 8,
-      "type": "EmptySD3LatentImage",
-      "pos": [
-        500,
-        170
-      ],
-      "size": [
-        315,
-        106
-      ],
-      "flags": {},
-      "order": 7,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "width",
-          "type": "INT",
-          "link": 7
-        },
-        {
-          "name": "height",
-          "type": "INT",
-          "link": 8
-        }
-      ],
-      "outputs": [
-        {
-          "name": "LATENT",
-          "type": "LATENT",
-          "links": [
             10
           ],
           "slot_index": 0
         }
       ],
+      "title": "Negative (all stages)",
       "widgets_values": [
-        1
+        "lowres, bad anatomy, bad hands, text, missing fingers, extra limbs, watermark, blurry, distorted face"
       ]
     },
     {
-      "id": 9,
+      "id": 8,
       "type": "KSampler",
       "pos": [
-        500,
-        320
+        700,
+        50
       ],
       "size": [
         315,
-        262
+        240
       ],
       "flags": {},
-      "order": 8,
+      "order": 7,
       "mode": 0,
       "inputs": [
         {
@@ -302,17 +269,17 @@
         {
           "name": "positive",
           "type": "CONDITIONING",
-          "link": 5
+          "link": 9
         },
         {
           "name": "negative",
           "type": "CONDITIONING",
-          "link": 6
+          "link": 10
         },
         {
           "name": "latent_image",
           "type": "LATENT",
-          "link": 10
+          "link": 8
         }
       ],
       "outputs": [
@@ -325,29 +292,30 @@
           "slot_index": 0
         }
       ],
+      "title": "Stage 1: Img2Img (denoise 0.5 = keep face + new scene)",
       "widgets_values": [
         123456789,
         "fixed",
-        4,
+        8,
         1.0,
         "euler",
-        "simple",
-        0.0
+        "beta",
+        0.5
       ]
     },
     {
-      "id": 10,
+      "id": 9,
       "type": "VAEDecode",
       "pos": [
-        880,
-        320
+        1070,
+        50
       ],
       "size": [
         210,
         46
       ],
       "flags": {},
-      "order": 9,
+      "order": 8,
       "mode": 0,
       "inputs": [
         {
@@ -358,7 +326,7 @@
         {
           "name": "vae",
           "type": "VAE",
-          "link": 4
+          "link": 5
         }
       ],
       "outputs": [
@@ -370,29 +338,200 @@
           ],
           "slot_index": 0
         }
-      ]
+      ],
+      "title": "Stage 1 Output"
+    },
+    {
+      "id": 10,
+      "type": "VAEEncode",
+      "pos": [
+        1070,
+        130
+      ],
+      "size": [
+        210,
+        46
+      ],
+      "flags": {},
+      "order": 9,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "pixels",
+          "type": "IMAGE",
+          "link": 12
+        },
+        {
+          "name": "vae",
+          "type": "VAE",
+          "link": 5
+        }
+      ],
+      "outputs": [
+        {
+          "name": "LATENT",
+          "type": "LATENT",
+          "links": [
+            13
+          ],
+          "slot_index": 0
+        }
+      ],
+      "title": "Re-encode Stage 1 for Stage 2"
     },
     {
       "id": 11,
-      "type": "PreviewImage",
+      "type": "CLIPTextEncode",
       "pos": [
-        880,
-        400
+        1070,
+        210
       ],
       "size": [
-        300,
-        300
+        400,
+        90
       ],
       "flags": {},
       "order": 10,
       "mode": 0,
       "inputs": [
         {
-          "name": "images",
+          "name": "clip",
+          "type": "CLIP",
+          "link": 2
+        }
+      ],
+      "outputs": [
+        {
+          "name": "CONDITIONING",
+          "type": "CONDITIONING",
+          "links": [
+            14
+          ],
+          "slot_index": 0
+        }
+      ],
+      "title": "Stage 2: Positive (face detail focus)",
+      "widgets_values": [
+        "sharp facial features, clear eyes, smooth skin texture, detailed hair, photorealistic portrait quality, 8K detail"
+      ]
+    },
+    {
+      "id": 12,
+      "type": "KSampler",
+      "pos": [
+        1340,
+        50
+      ],
+      "size": [
+        315,
+        200
+      ],
+      "flags": {},
+      "order": 11,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model",
+          "type": "MODEL",
+          "link": 1
+        },
+        {
+          "name": "positive",
+          "type": "CONDITIONING",
+          "link": 14
+        },
+        {
+          "name": "negative",
+          "type": "CONDITIONING",
+          "link": 10
+        },
+        {
+          "name": "latent_image",
+          "type": "LATENT",
+          "link": 13
+        }
+      ],
+      "outputs": [
+        {
+          "name": "LATENT",
+          "type": "LATENT",
+          "links": [
+            15
+          ],
+          "slot_index": 0
+        }
+      ],
+      "title": "Stage 2: Detail refine (denoise 0.25 = enhance, keep structure)",
+      "widgets_values": [
+        123456789,
+        "fixed",
+        4,
+        1.0,
+        "euler",
+        "simple",
+        0.25
+      ]
+    },
+    {
+      "id": 13,
+      "type": "VAEDecode",
+      "pos": [
+        1700,
+        50
+      ],
+      "size": [
+        210,
+        46
+      ],
+      "flags": {},
+      "order": 12,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "samples",
+          "type": "LATENT",
+          "link": 15
+        },
+        {
+          "name": "vae",
+          "type": "VAE",
+          "link": 6
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
           "type": "IMAGE",
-          "link": 12
+          "links": [
+            16
+          ],
+          "slot_index": 0
         }
       ]
+    },
+    {
+      "id": 14,
+      "type": "PreviewImage",
+      "pos": [
+        1700,
+        130
+      ],
+      "size": [
+        350,
+        450
+      ],
+      "flags": {},
+      "order": 13,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 16
+        }
+      ],
+      "outputs": [],
+      "title": "Final Output (Face Enhanced)"
     }
   ],
   "links": [
@@ -400,7 +539,7 @@
       1,
       1,
       0,
-      9,
+      8,
       0,
       "MODEL"
     ],
@@ -408,7 +547,7 @@
       2,
       2,
       0,
-      4,
+      6,
       0,
       "CLIP"
     ],
@@ -416,7 +555,7 @@
       3,
       2,
       0,
-      5,
+      7,
       0,
       "CLIP"
     ],
@@ -424,63 +563,103 @@
       4,
       3,
       0,
-      10,
+      5,
       1,
       "VAE"
     ],
     [
       5,
+      3,
+      0,
+      9,
+      1,
+      "VAE"
+    ],
+    [
+      6,
+      3,
+      0,
+      13,
+      1,
+      "VAE"
+    ],
+    [
+      7,
       4,
       0,
-      9,
-      1,
-      "CONDITIONING"
-    ],
-    [
-      6,
       5,
       0,
-      9,
-      2,
-      "CONDITIONING"
-    ],
-    [
-      7,
-      6,
-      0,
-      8,
-      0,
-      "INT"
+      "IMAGE"
     ],
     [
       8,
-      7,
+      5,
       0,
       8,
-      1,
-      "INT"
-    ],
-    [
-      10,
-      8,
-      0,
-      9,
       3,
       "LATENT"
     ],
     [
-      11,
       9,
+      6,
       0,
+      8,
+      1,
+      "CONDITIONING"
+    ],
+    [
       10,
+      7,
+      0,
+      8,
+      2,
+      "CONDITIONING"
+    ],
+    [
+      11,
+      8,
+      0,
+      9,
       0,
       "LATENT"
     ],
     [
       12,
+      9,
+      0,
       10,
       0,
+      "IMAGE"
+    ],
+    [
+      13,
+      10,
+      0,
+      12,
+      3,
+      "LATENT"
+    ],
+    [
+      14,
       11,
+      0,
+      12,
+      1,
+      "CONDITIONING"
+    ],
+    [
+      15,
+      12,
+      0,
+      13,
+      0,
+      "LATENT"
+    ],
+    [
+      16,
+      13,
+      0,
+      14,
       0,
       "IMAGE"
     ]
@@ -489,7 +668,7 @@
   "config": {},
   "extra": {
     "workflow": {
-      "name": "Z-Image Turbo 基础文生图"
+      "name": "Face Detailer | Img2Img pass1 + detail refine pass2"
     }
   }
 }

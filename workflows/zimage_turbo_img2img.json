@@ -125,7 +125,7 @@
           "slot_index": 1
         }
       ],
-      "title": "Ref Image: Load YOUR photo (face+pose preserved, denoise controls change)",
+      "title": "Ref Image: Load YOUR photo (face+pose preserved or changed)",
       "widgets_values": [
         "example.png",
         "image"
@@ -205,9 +205,9 @@
           "slot_index": 0
         }
       ],
-      "title": "Positive (Describe NEW scene/lighting/mood; do NOT describe body pose)",
+      "title": "Positive (denoise<0.5: describe only mood/lighting | denoise>0.55: describe NEW pose too)",
       "widgets_values": [
-        "1girl, chinese, red qipao, courtyard, soft light"
+        "medium full shot, young woman side lying on white bed, head on pillow, face clearly visible, legs gently bent, sheer white stockings, warm golden backlight, photorealistic, soft lighting"
       ],
       "properties": {
         "Node name for S&R": "CLIPTextEncode"
@@ -349,15 +349,16 @@
       "widgets_values": [
         123456789,
         "fixed",
-        4,
+        8,
         1.0,
         "euler",
-        "simple",
-        0.6
+        "beta",
+        0.55
       ],
       "properties": {
         "Node name for S&R": "KSampler"
-      }
+      },
+      "title": "Sampler (denoise: 0.35=keep pose+face, 0.50=moderate, 0.70=free pose change)"
     },
     {
       "id": 8,

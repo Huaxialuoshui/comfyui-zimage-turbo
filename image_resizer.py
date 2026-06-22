@@ -241,6 +241,7 @@ select:focus,input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 
         <button class="mode-btn active" data-mode="center-crop" data-i18n-mode="center_crop" onclick="setMode(this)">Center<br>Crop</button>
         <button class="mode-btn" data-mode="stretch" data-i18n-mode="stretch" onclick="setMode(this)">Stretch<br>Fill</button>
         <button class="mode-btn" data-mode="fit-pad" data-i18n-mode="fit_pad" onclick="setMode(this)">Fit +<br>Pad</button>
+        <button class="mode-btn" data-mode="smart-crop" onclick="setMode(this)">Smart<br>Crop</button>
       </div>
     </div>
 
@@ -469,6 +470,16 @@ def process_image(pil_img, width, height, mode):
         nw, nh = round(w * scale), round(h * scale)
         scaled = pil_img.resize((nw, nh), Image.LANCZOS)
         return scaled.crop(((nw - width)//2, (nh - height)//2, (nw + width)//2, (nh + height)//2))
+    elif mode == "smart-crop":
+        # Smart crop: scales to cover, then crops from center
+        scale = max(width / w, height / h)
+        new_w = round(w * scale)
+        new_h = round(h * scale)
+        scaled = pil_img.resize((new_w, new_h), Image.LANCZOS)
+        left = (new_w - width) // 2
+        top = (new_h - height) // 2
+        return scaled.crop((left, top, left + width, top + height))
+
     elif mode == "fit-pad":
         scale = min(width / w, height / h)
         nw, nh = round(w * scale), round(h * scale)

@@ -1,7 +1,7 @@
 {
   "version": 0.4,
-  "last_node_id": 10,
-  "last_link_id": 10,
+  "last_node_id": 15,
+  "last_link_id": 15,
   "nodes": [
     {
       "id": 1,
@@ -103,12 +103,12 @@
       "id": 4,
       "type": "CLIPTextEncode",
       "pos": [
-        50,
-        380
+        450,
+        50
       ],
       "size": [
-        420,
-        180
+        450,
+        150
       ],
       "flags": {},
       "order": 3,
@@ -130,21 +130,21 @@
           "slot_index": 0
         }
       ],
-      "title": "正面提示词 (Positive Prompt)",
+      "title": "Positive (use SAME prompt, different seeds)",
       "widgets_values": [
-        "masterpiece, best quality, 1girl, beautiful detailed eyes"
+        "medium full shot, young woman side lying on white bed, sheer white stockings, warm backlight, photorealistic"
       ]
     },
     {
       "id": 5,
       "type": "CLIPTextEncode",
       "pos": [
-        50,
-        590
+        450,
+        230
       ],
       "size": [
-        420,
-        180
+        450,
+        100
       ],
       "flags": {},
       "order": 4,
@@ -166,92 +166,24 @@
           "slot_index": 0
         }
       ],
-      "title": "负面提示词 (Negative Prompt)",
+      "title": "Negative Prompt",
       "widgets_values": [
-        "lowres, bad anatomy, bad hands, text, error, missing fingers, worst quality"
+        "lowres, bad anatomy, bad hands, text, error, missing fingers, extra limbs, watermark, blurry, deformed"
       ]
     },
     {
       "id": 6,
-      "type": "PrimitiveNode",
-      "pos": [
-        500,
-        50
-      ],
-      "size": [
-        210,
-        82
-      ],
-      "flags": {},
-      "order": 5,
-      "mode": 0,
-      "outputs": [
-        {
-          "name": "INT",
-          "type": "INT",
-          "widget": {
-            "name": "width"
-          },
-          "links": [
-            7
-          ]
-        }
-      ],
-      "title": "Width",
-      "properties": {
-        "Run widget replace on values": false
-      },
-      "widgets_values": [
-        1024
-      ]
-    },
-    {
-      "id": 7,
-      "type": "PrimitiveNode",
-      "pos": [
-        760,
-        50
-      ],
-      "size": [
-        210,
-        82
-      ],
-      "flags": {},
-      "order": 6,
-      "mode": 0,
-      "outputs": [
-        {
-          "name": "INT",
-          "type": "INT",
-          "widget": {
-            "name": "height"
-          },
-          "links": [
-            8
-          ]
-        }
-      ],
-      "title": "Height",
-      "properties": {
-        "Run widget replace on values": false
-      },
-      "widgets_values": [
-        1024
-      ]
-    },
-    {
-      "id": 8,
       "type": "EmptySD3LatentImage",
       "pos": [
-        500,
-        170
+        450,
+        370
       ],
       "size": [
         315,
         106
       ],
       "flags": {},
-      "order": 7,
+      "order": 5,
       "mode": 0,
       "inputs": [
         {
@@ -263,6 +195,11 @@
           "name": "height",
           "type": "INT",
           "link": 8
+        },
+        {
+          "name": "batch_size",
+          "type": "INT",
+          "link": 9
         }
       ],
       "outputs": [
@@ -276,22 +213,22 @@
         }
       ],
       "widgets_values": [
-        1
+        4
       ]
     },
     {
-      "id": 9,
+      "id": 7,
       "type": "KSampler",
       "pos": [
-        500,
-        320
+        960,
+        50
       ],
       "size": [
         315,
-        262
+        220
       ],
       "flags": {},
-      "order": 8,
+      "order": 6,
       "mode": 0,
       "inputs": [
         {
@@ -325,29 +262,30 @@
           "slot_index": 0
         }
       ],
+      "title": "Sampler (seed=randomize for batch)",
       "widgets_values": [
-        123456789,
-        "fixed",
-        4,
+        0,
+        "randomize",
+        8,
         1.0,
         "euler",
-        "simple",
-        0.0
+        "beta",
+        1.0
       ]
     },
     {
-      "id": 10,
+      "id": 8,
       "type": "VAEDecode",
       "pos": [
-        880,
-        320
+        1330,
+        50
       ],
       "size": [
         210,
         46
       ],
       "flags": {},
-      "order": 9,
+      "order": 7,
       "mode": 0,
       "inputs": [
         {
@@ -373,15 +311,75 @@
       ]
     },
     {
-      "id": 11,
-      "type": "PreviewImage",
+      "id": 9,
+      "type": "ImageFromBatch",
       "pos": [
-        880,
-        400
+        1330,
+        130
       ],
       "size": [
-        300,
-        300
+        210,
+        58
+      ],
+      "flags": {},
+      "order": 8,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 12
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            13
+          ],
+          "slot_index": 0
+        }
+      ],
+      "title": "Pick image from batch",
+      "widgets_values": [
+        0,
+        1
+      ]
+    },
+    {
+      "id": 10,
+      "type": "PreviewImage",
+      "pos": [
+        1600,
+        50
+      ],
+      "size": [
+        350,
+        400
+      ],
+      "flags": {},
+      "order": 9,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 13
+        }
+      ],
+      "outputs": []
+    },
+    {
+      "id": 11,
+      "type": "ImageGridComposite",
+      "pos": [
+        1600,
+        500
+      ],
+      "size": [
+        210,
+        50
       ],
       "flags": {},
       "order": 10,
@@ -392,6 +390,150 @@
           "type": "IMAGE",
           "link": 12
         }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            14
+          ],
+          "slot_index": 0
+        }
+      ],
+      "title": "Grid view (all seeds)",
+      "widgets_values": [
+        2,
+        2
+      ]
+    },
+    {
+      "id": 12,
+      "type": "PreviewImage",
+      "pos": [
+        1600,
+        580
+      ],
+      "size": [
+        350,
+        400
+      ],
+      "flags": {},
+      "order": 11,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 14
+        }
+      ],
+      "outputs": [],
+      "title": "Grid Preview (all 4 seeds)"
+    },
+    {
+      "id": 13,
+      "type": "PrimitiveNode",
+      "pos": [
+        450,
+        510
+      ],
+      "size": [
+        210,
+        82
+      ],
+      "flags": {},
+      "order": 12,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "INT",
+          "type": "INT",
+          "widget": {
+            "name": "width"
+          },
+          "links": [
+            7
+          ]
+        }
+      ],
+      "title": "Width",
+      "properties": {
+        "Run widget replace on values": false
+      },
+      "widgets_values": [
+        768
+      ]
+    },
+    {
+      "id": 14,
+      "type": "PrimitiveNode",
+      "pos": [
+        450,
+        610
+      ],
+      "size": [
+        210,
+        82
+      ],
+      "flags": {},
+      "order": 13,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "INT",
+          "type": "INT",
+          "widget": {
+            "name": "height"
+          },
+          "links": [
+            8
+          ]
+        }
+      ],
+      "title": "Height",
+      "properties": {
+        "Run widget replace on values": false
+      },
+      "widgets_values": [
+        1360
+      ]
+    },
+    {
+      "id": 15,
+      "type": "PrimitiveNode",
+      "pos": [
+        450,
+        710
+      ],
+      "size": [
+        210,
+        82
+      ],
+      "flags": {},
+      "order": 14,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "INT",
+          "type": "INT",
+          "widget": {
+            "name": "batch_size"
+          },
+          "links": [
+            9
+          ]
+        }
+      ],
+      "title": "Batch Size (how many seeds)",
+      "properties": {
+        "Run widget replace on values": false
+      },
+      "widgets_values": [
+        4
       ]
     }
   ],
@@ -400,7 +542,7 @@
       1,
       1,
       0,
-      9,
+      7,
       0,
       "MODEL"
     ],
@@ -424,7 +566,7 @@
       4,
       3,
       0,
-      10,
+      8,
       1,
       "VAE"
     ],
@@ -432,7 +574,7 @@
       5,
       4,
       0,
-      9,
+      7,
       1,
       "CONDITIONING"
     ],
@@ -440,47 +582,71 @@
       6,
       5,
       0,
-      9,
+      7,
       2,
       "CONDITIONING"
     ],
     [
       7,
-      6,
+      13,
       0,
-      8,
+      6,
       0,
       "INT"
     ],
     [
       8,
-      7,
+      14,
       0,
-      8,
+      6,
       1,
       "INT"
     ],
     [
-      10,
-      8,
-      0,
       9,
+      15,
+      0,
+      6,
+      2,
+      "INT"
+    ],
+    [
+      10,
+      6,
+      0,
+      7,
       3,
       "LATENT"
     ],
     [
       11,
-      9,
+      7,
       0,
-      10,
+      8,
       0,
       "LATENT"
     ],
     [
       12,
+      8,
+      0,
+      9,
+      0,
+      "IMAGE"
+    ],
+    [
+      13,
+      9,
+      0,
       10,
       0,
+      "IMAGE"
+    ],
+    [
+      14,
       11,
+      0,
+      12,
       0,
       "IMAGE"
     ]
@@ -489,7 +655,7 @@
   "config": {},
   "extra": {
     "workflow": {
-      "name": "Z-Image Turbo 基础文生图"
+      "name": "Seed Explorer | Batch 4 images, pick best, grid view"
     }
   }
 }

@@ -1,4 +1,4 @@
-# === Python ===
+ï»¿# === Python ===
 __pycache__/
 *.pyc
 *.pyo
@@ -6,41 +6,34 @@ __pycache__/
 dist/
 build/
 
-# === ComfyUI Ä£ÐÍ ===
-ComfyUI/models/checkpoints/
-ComfyUI/models/vae/
-ComfyUI/models/clip/
-ComfyUI/models/LLM/
-ComfyUI/models/loras/
-ComfyUI/models/controlnet/
-ComfyUI/models/embeddings/
-ComfyUI/models/upscale_models/
+# === ComfyUI engine (installed by setup.bat) ===
+ComfyUI/
 
-# === ComfyUI ÔËÐÐÊ± (×ÓÄ£¿é) ===
-ComfyUI/custom_nodes/
-ComfyUI/output/
-ComfyUI/user/
-ComfyUI/input/
-ComfyUI/.git/
-
-# === Í¼Æ¬Êä³ö ===
+# === Temporary / output ===
 outputs/
 output_resized/
 tmp_resizer/
+tmp/
+workflows_old/
 
-# === ÏµÍ³ÎÄ¼þ ===
+# === System ===
 Thumbs.db
 .DS_Store
+*.lock
 
-# === Ä£ÐÍÎÄ¼þ ===
+# === IDE ===
+.idea/
+.vscode/
+*.swp
+
+# === Model files (too large for git) ===
 *.safetensors
 *.bin
 *.pth
 *.pt
 *.gguf
+*.task
 
-# ComfyUI ÔËÐÐÊ± (ÓÉ setup.bat °²×°)
-ComfyUI/
-
-# IDE ÅäÖÃ
-.idea/
+# === Python venv ===
+venv/
+.venv/
