@@ -104,7 +104,8 @@ Image Resizer (8199) ── 预处理参考图
 
 ### Anima（二次元 / 动漫风格）— 2 个工作流
 
-> 2B 参数动漫模型，基于 NVIDIA Cosmos-Predict2。专注动画/插画，**不支持写实**。
+> 2B 参数动漫模型，基于 NVIDIA Cosmos-Predict2，circlestone-labs/Anima。
+> 专注动画/插画/艺术风格，**不支持写实/照片**。
 > 详见 [Anima 官方](https://huggingface.co/circlestone-labs/Anima)
 
 | 工作流 | 文件 | 说明 | 默认分辨率 |
@@ -112,13 +113,34 @@ Image Resizer (8199) ── 预处理参考图
 | **Anima Basic** | `anima_basic.json` | 文生图，Danbooru 标签格式 | 1024x1024 |
 | **Anima Img2Img** | `anima_img2img.json` | 参考图 + 文本引导 | 1024x1024 |
 
-**Anima 提示词规范：**
-- Danbooru 标签格式，小写英文，空格代替下划线
-- 正面前缀：`masterpiece, best quality, score_7, safe, `
-- 负面前缀：`worst quality, low quality, score_1, score_2, score_3, artist name`
-- 艺术家加 `@` 前缀：`@artist_name`
-- 标签顺序：`[质量/年份/安全] [人数] [角色] [系列] [艺术家] [通用标签]`
-- 推荐：30-50 步、CFG 4-5、采样器 `er_sde`
+**NEW:** 试试 [Anima Turbo LoRA](https://civitai.com/models/2560840/anima-turbo-lora) — 更快更稳，放 `ComfyUI/models/loras/` 即可。
+
+#### Anima 提示词规范
+
+- **格式**：Danbooru 标签，小写英文，空格分隔（非逗号），下划线仅用于 score 标签
+- **正面前缀**：`masterpiece, best quality, score_7, safe, `
+- **负面前缀**：`worst quality, low quality, score_1, score_2, score_3, artist name`
+- **标签顺序**：`[质量/年份/安全] [人数] [角色] [系列] [艺术家] [通用标签]`
+
+#### Anima 采样器选择指南
+
+| 采样器 | 风格 | 说明 |
+|--------|------|------|
+| `er_sde` | 中性、平涂色、锐利线条 | **默认推荐** |
+| `euler_a` | 柔和、细线条、2.5D 倾向 | CFG 可推更高而不烧图 |
+| `dpmpp_2m_sde_gpu` | 类似 er_sde 但更"有创意" | 有时会过于放飞 |
+
+如需更写实/油画质感：搭配 [RES4LYF](https://github.com/Gourieff/ComfyUI_RES4LYF) 的 `beta57` scheduler。
+
+#### Anima 进阶技巧
+
+- **艺术家**：必须 `@` 前缀，如 `@hiroyuki okiura`，不加则效果极弱
+- **提示词加权**：`(chibi:2)` 语法有效，但需比 SDXL 更高权重
+- **时间标签**：`year 2025` 或 `newest` / `recent` / `mid` / `early` / `old`
+- **Dataset 标签**：首行写 `ye-pop` 或 `deviantart` 然后换行，可切换非动漫艺术风格
+- **纯自然语言**：至少 2 句话，可混合标签；描述角色时先写名字再写外观
+- **文本渲染**：模型不擅长文字，仅能做单个单词或极短短语
+- **许可证**：模型权重非商用，但 **生成的图片可以商用**（卖图、接稿、游戏素材均可）
 
 ---
 
@@ -162,6 +184,19 @@ Image Resizer (8199) ── 预处理参考图
 
 ---
 
+## 提示词模板（喂给 LLM 用）
+
+项目内置两个 LLM 提示词模板文件，可复制给 ChatGPT/Claude 等大模型自动生成对应风格的提示词：
+
+| 文件 | 用途 |
+|------|------|
+| `prompt_template_zimage.txt` | Z-Image Turbo 写实提示词生成 |
+| `prompt_template_anima.txt` | Anima 二次元提示词生成 |
+
+用法：将模板内容粘贴给 LLM，再描述你的需求，LLM 会按对应格式输出提示词。
+
+---
+
 ## 快速开始
 
 ### 首次安装
@@ -194,7 +229,7 @@ resizer.bat            # 仅启动 Image Resizer
 
 ---
 
-## 提示词模板
+## 提示词模板（手动编写参考）
 
 ### Z-Image（写实）
 
@@ -229,7 +264,7 @@ running through rain, wet hair, puddle splashes, overcast sky
 | Z-Image | 高质量 | 20 | 1024^2 | beta | ~25s |
 | Z-Image | 批量探索 | 8 | 768x1360 | beta | Seed Explorer |
 | Anima | 日常 | 35 | 1024^2 | er_sde | normal scheduler |
-| Anima | 高质量 | 50 | 1536^2 | er_sde | normal scheduler |
+| Anima | 高质量 | 50 | 1536^2 | er_sde | 可搭配 euler_a/dpmpp_2m |
 
 ---
 
@@ -258,7 +293,7 @@ ComfyUI-Manager → Install Missing Nodes
 ```
 步数太低 → 30-50 步
 CFG 太低 → 4-5
-提示词格式不对 → 使用 Danbooru 标签格式
+提示词格式不对 → 使用 Danbooru 标签格式（见上方规范）
 ```
 
 ### 下载失败 / 切换 VPN 后重新下载
@@ -281,6 +316,7 @@ workflows/backup/v2/ → 复制回 workflows/ 覆盖
 | IP-Adapter/InstantID | Z-Image / Anima 非 SDXL/Flux 架构，不兼容 |
 | ControlNet/OpenPose | 无对应 ControlNet 模型 |
 | Anima 不支持写实 | 专注动漫/插画，写实会崩 |
+| Anima 文本渲染 | 仅能做单个单词或极短短语 |
 | Inpainting | 兼容性待验证 |
 | 极限长宽比 | 建议 3:2 ~ 2:3 |
 
@@ -300,7 +336,8 @@ comfyui-zimage-package/
 │
 ├── anima_setup.py              # Anima 下载（断点续传/重试/校验）
 ├── image_resizer.py            # Web UI 图片对齐 (8199)
-├── prompt_template.txt         # 提示词模板
+├── prompt_template_zimage.txt  # LLM 提示词模板 - Z-Image
+├── prompt_template_anima.txt   # LLM 提示词模板 - Anima
 │
 ├── scripts/
 │   ├── install.py              # Z-Image 安装主脚本
@@ -331,6 +368,7 @@ comfyui-zimage-package/
 | ComfyUI | https://github.com/comfyanonymous/ComfyUI |
 | Z-Image Turbo | https://huggingface.co/Comfy-Org/z_image_turbo |
 | Anima | https://huggingface.co/circlestone-labs/Anima |
+| Anima Turbo LoRA | https://civitai.com/models/2560840/anima-turbo-lora |
 | QwenVL | https://github.com/QwenLM/Qwen2-VL |
 | ComfyUI-Manager | https://github.com/ltdrdata/ComfyUI-Manager |
 
@@ -344,6 +382,7 @@ comfyui-zimage-package/
 - QwenVL 智能链路完成（扩写/分析/精修/姿态迁移）
 - Seed Explorer 批量种子探索
 - Image Resizer 图片对齐 Web 工具
+- LLM 提示词模板（Z-Image + Anima 双模板）
 - 一键入口 `start.bat` — 新手 3 分钟出图
 - 全工作流节点自带中文使用提示
 
@@ -351,4 +390,7 @@ comfyui-zimage-package/
 
 ## 许可
 
-本整合脚本 MIT 许可。ComfyUI (GPL-3.0)、Z-Image Turbo (Apache 2.0)、Anima (CircleStone Labs Non-Commercial License)、QwenVL (Apache 2.0) 遵循各自许可。仅供学习研究使用。
+本整合脚本 MIT 许可。ComfyUI (GPL-3.0)、Z-Image Turbo (Apache 2.0) 遵循各自许可。
+Anima 模型权重使用 [CircleStone Labs Non-Commercial License](https://huggingface.co/circlestone-labs/Anima/blob/main/LICENSE.md) —
+**模型权重非商用，但生成的图片可以商用**（卖图/接稿/游戏素材等）。QwenVL (Apache 2.0) 遵循各自许可。
+仅供学习研究使用。
