@@ -1,8 +1,8 @@
-﻿#!/usr/bin/env python
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
 Image Resizer Tool - Web UI
-澶氳瑷€ / 澶氫富棰?/ 鍗?鎵归噺鍥剧墖瀵归綈宸ュ叿
+多语言 / 多主题 / 单/批量图片对齐工具
 """
 
 import os, io, zipfile, sys, webbrowser, uuid, threading
@@ -31,36 +31,36 @@ PRESETS_EN = {
     "1920x1080 (Full HD Landscape)": (1920, 1080),
 }
 PRESETS_CN = {
-    "1024x1024 (姝ｆ柟褰?1:1)": (1024, 1024),
-    "768x1360 (绔栧睆 9:16)": (768, 1360),
-    "576x1408 (绔栧睆 9:16 澶囬€?": (576, 1408),
-    "1360x768 (妯睆 16:9)": (1360, 768),
-    "1408x576 (妯睆 16:9 澶囬€?": (1408, 576),
-    "1080x1920 (鍏ㄩ珮娓呯珫灞?": (1080, 1920),
-    "1920x1080 (鍏ㄩ珮娓呮í灞?": (1920, 1080),
+    "1024x1024 (正方形 1:1)": (1024, 1024),
+    "768x1360 (竖屏 9:16)": (768, 1360),
+    "576x1408 (竖屏 9:16 备选)": (576, 1408),
+    "1360x768 (横屏 16:9)": (1360, 768),
+    "1408x576 (横屏 16:9 备选)": (1408, 576),
+    "1080x1920 (全高清竖屏)": (1080, 1920),
+    "1920x1080 (全高清横屏)": (1920, 1080),
 }
 
 THEMES = {
     "miku": {
-        "name": "Miku / 鍒濋煶",
+        "name": "Miku / 初音",
         "bg": "#13162b", "panel": "#1a1f3a", "header": "#0e1229",
         "accent": "#66ccff", "secondary": "#39C5BB", "border": "#2a3050",
         "text": "#e0e8f0", "text2": "#8899aa", "card": "#181d38"
     },
     "sakura": {
-        "name": "Sakura / 妯辫姳",
+        "name": "Sakura / 樱花",
         "bg": "#2b1a22", "panel": "#3a1f2a", "header": "#22151c",
         "accent": "#ff6b9d", "secondary": "#ff9ec4", "border": "#553040",
         "text": "#f0e0e4", "text2": "#aa8892", "card": "#381d28"
     },
     "matrix": {
-        "name": "Matrix / 鐭╅樀",
+        "name": "Matrix / 矩阵",
         "bg": "#0a1a0a", "panel": "#0d240d", "header": "#081408",
         "accent": "#00ff41", "secondary": "#39ff77", "border": "#1a3a1a",
         "text": "#c0e0c0", "text2": "#558855", "card": "#0f2a0f"
     },
     "sunset": {
-        "name": "Sunset / 鏃ヨ惤",
+        "name": "Sunset / 日落",
         "bg": "#1a1218", "panel": "#2a1618", "header": "#1a0e12",
         "accent": "#ff8844", "secondary": "#ffcc44", "border": "#442828",
         "text": "#f0d8c8", "text2": "#aa8870", "card": "#281a1a"
@@ -68,41 +68,41 @@ THEMES = {
 }
 
 EXPORT_FORMATS = {
-    "JPEG (楂樿川閲?": "jpeg_95",
-    "JPEG (涓瓑)": "jpeg_80",
-    "JPEG (蹇€?": "jpeg_60",
-    "PNG (鏃犳崯)": "png",
-    "WEBP (楂樿川閲?": "webp_90",
-    "WEBP (蹇€?": "webp_70",
+    "JPEG (高质量)": "jpeg_95",
+    "JPEG (中等)": "jpeg_80",
+    "JPEG (快速)": "jpeg_60",
+    "PNG (无损)": "png",
+    "WEBP (高质量)": "webp_90",
+    "WEBP (快速)": "webp_70",
 }
 
 STR = {
     "zh": {
-        "title": "鍥剧墖瀵归綈宸ュ叿 - Z-Image Turbo",
-        "subtitle": "鐢ㄤ簬 ComfyUI 宸ヤ綔娴佸弬鑰冨浘瀵归綈",
-        "drop": "鎷栨嫿鍥剧墖鍒版澶勬垨鐐瑰嚮閫夋嫨",
-        "drop_hint": "鏀寔 JPG, PNG, WEBP, BMP",
-        "preset": "棰勮灏哄",
-        "preset_custom": "-- 鑷畾涔?--",
-        "custom_size": "鑷畾涔夊昂瀵?,
-        "fit_mode": "瑁佸壀妯″紡",
-        "center_crop": "灞呬腑\n瑁佸壀",
-        "stretch": "鎷変几\n濉厖",
-        "fit_pad": "绛夋瘮\n鐣欓粦杈?,
-        "process": "澶勭悊鎵€鏈夊浘鐗?,
-        "download": "涓嬭浇鍏ㄩ儴 ZIP",
-        "clear": "娓呯┖鍏ㄩ儴",
-        "remove": "绉婚櫎",
-        "processed": "澶勭悊瀹屾垚",
+        "title": "图片对齐工具 - Z-Image/anima Turbo",
+        "subtitle": "用于 ComfyUI 工作流参考图对齐",
+        "drop": "拖拽图片到此处或点击选择",
+        "drop_hint": "支持 JPG, PNG, WEBP, BMP",
+        "preset": "预设尺寸",
+        "preset_custom": "-- 自定义 --",
+        "custom_size": "自定义尺寸",
+        "fit_mode": "裁剪模式",
+        "center_crop": "居中\n裁剪",
+        "stretch": "拉伸\n填充",
+        "fit_pad": "等比\n留黑边",
+        "process": "处理所有图片",
+        "download": "下载全部 ZIP",
+        "clear": "清空全部",
+        "remove": "移除",
+        "processed": "处理完成",
         "lang": "English",
-        "theme": "涓婚閰嶈壊",
-        "width": "瀹?,
-        "height": "楂?,
-        "start_hint": "鎷栨嫿鍥剧墖鍒版澶勫紑濮?,
+        "theme": "主题配色",
+        "width": "宽",
+        "height": "高",
+        "start_hint": "拖拽图片到此处开始",
     },
     "en": {
-        "title": "Image Resizer - Z-Image / Anima",
-        "subtitle": "For ComfyUI workflow reference images (Z-Image / Anima)",
+        "title": "Image Resizer - Z-Image Turbo",
+        "subtitle": "For ComfyUI workflow reference images",
         "drop": "Drop images here or click to browse",
         "drop_hint": "Supports JPG, PNG, WEBP, BMP",
         "preset": "Preset Size",
@@ -117,7 +117,7 @@ STR = {
         "clear": "Clear All",
         "remove": "Remove",
         "processed": "Processed successfully",
-        "lang": "涓枃",
+        "lang": "中文",
         "theme": "Theme",
         "width": "Width",
         "height": "Height",
@@ -195,9 +195,9 @@ select:focus,input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 
 <body>
 <div class="header">
   <h1 data-i18n="title">&#9881; Image Resizer</h1>
-  <span data-i18n="subtitle">for Z-Image Turbo / Anima</span>
+  <span data-i18n="subtitle">for Z-Image Turbo</span>
   <div class="header-right">
-    <button class="header-btn" onclick="toggleLang()" id="langBtn" data-i18n="lang">涓枃</button>
+    <button class="header-btn" onclick="toggleLang()" id="langBtn" data-i18n="lang">中文</button>
     <button class="header-btn" onclick="toggleThemeMenu()">&#9881; <span data-i18n="theme">Theme</span></button>
   </div>
 </div>
@@ -323,12 +323,12 @@ async function renderPreviews() {
   for (let img of images) {
     let card = document.createElement('div');
     card.className = 'card';
-    let badge = img.processed ? '<div class=\"badge done\">&#10003; ' + (lang=='cn'?'宸插鐞?:'Done') + '</div>' : '<div class=\"badge new\">&#9888; ' + (lang=='cn'?'鏈鐞?:'New') + '</div>';
+    let badge = img.processed ? '<div class=\"badge done\">&#10003; ' + (lang=='cn'?'已处理':'Done') + '</div>' : '<div class=\"badge new\">&#9888; ' + (lang=='cn'?'未处理':'New') + '</div>';
     card.innerHTML = badge + '<img src="/api/preview/' + sessionId + '/' + img.index + '" alt="' + img.name + '">' +
       '<div class="info"><strong title="' + img.name + '">' + img.name + '</strong>' +
       img.width + ' &times; ' + img.height + '</div>' +
       '<div class="actions"><button class="btn-danger" onclick="removeImage(' + img.index + ')">' +
-      (lang === 'cn' ? '&#10005; 绉婚櫎' : '&#10005; Remove') + '</button></div>';
+      (lang === 'cn' ? '&#10005; 移除' : '&#10005; Remove') + '</button></div>';
     area.appendChild(card);
   }
   applyLang();
@@ -354,7 +354,7 @@ async function processAll() {
   let fmt = document.getElementById('formatSelect').value || 'jpeg_95';
   let btn = document.getElementById('processBtn');
   btn.disabled = true;
-  btn.innerHTML = '<span class="spinner"></span>' + (lang === 'cn' ? '澶勭悊涓?..' : 'Processing...');
+  btn.innerHTML = '<span class="spinner"></span>' + (lang === 'cn' ? '处理中...' : 'Processing...');
   try {
     let r = await fetch('/api/process/' + sessionId, {
       method:'POST', headers:{'Content-Type':'application/json'},
@@ -363,10 +363,10 @@ async function processAll() {
     let d = await r.json();
     await renderPreviews();
     updateCount();
-    toast((lang === 'cn' ? '&#10003; 澶勭悊瀹屾垚 ' : '&#10003; Processed ') + d.count + (lang === 'cn' ? ' 寮? : ' image(s)'));
+    toast((lang === 'cn' ? '&#10003; 处理完成 ' : '&#10003; Processed ') + d.count + (lang === 'cn' ? ' 张' : ' image(s)'));
   } catch(e) { toast('Error: ' + e.message); }
   var cnt = document.getElementById('imgCount');
-  btn.innerHTML = '馃挭 ' + (lang === 'cn' ? '澶勭悊鍥剧墖' : 'Process Images') + ' (' + (cnt ? cnt.textContent : '0') + ')';
+  btn.innerHTML = '💪 ' + (lang === 'cn' ? '处理图片' : 'Process Images') + ' (' + (cnt ? cnt.textContent : '0') + ')';
   btn.disabled = false;
 }
 
@@ -588,4 +588,3 @@ if __name__ == "__main__":
     print("=" * 50)
     threading.Timer(1.0, lambda: webbrowser.open(f"http://127.0.0.1:{PORT}")).start()
     app.run(host="127.0.0.1", port=PORT, debug=False)
-
