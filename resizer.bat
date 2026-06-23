@@ -4,7 +4,7 @@ title Image Resizer Tool
 
 echo.
 echo ============================================================
-echo     Image Resizer Tool - Z-Image Turbo
+echo     Image Resizer Tool - Z-Image Turbo / Anima
 echo ============================================================
 echo.
 
@@ -17,3 +17,4 @@ echo.
 python image_resizer.py
 
 pause
+

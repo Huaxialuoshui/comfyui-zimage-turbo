@@ -1,10 +1,10 @@
 @echo off
 chcp 65001 >nul
-title ComfyUI + Z-Image Turbo
+title ComfyUI + Z-Image Turbo / Anima
 
 echo.
 echo ============================================================
-echo     ComfyUI + Z-Image Turbo
+echo     ComfyUI + Z-Image Turbo / Anima
 echo ============================================================
 echo.
 
@@ -39,3 +39,4 @@ if %errorlevel% neq 0 (
     echo [!] ComfyUI failed (code: %errorlevel%)
     pause
 )
+
