@@ -50,9 +50,12 @@ Image Resizer (8199) ── 预处理参考图
 |-----------|---------|
 | 写实照片级 AI 图像 | Z-Image Turbo → `basic` / `qwenvl` |
 | 二次元动漫风格 | Anima → `anima_basic` |
+| 动漫角色换姿态 | Anima → `anima_maxpose` |
+| 多人互动合成 | Anima → `anima_multifusion` |
 | 用自己的照片换场景/光影 | Z-Image → `img2img` |
 | 保脸 + 自动增强 | Z-Image → `face_detailer` |
 | 大动作换姿态 | Z-Image → `maxpose` |
+| 换身体保留脸 | Z-Image → `face_body` |
 | 自动生成故事 | Z-Image → `storyboard` |
 | 批量探索不同种子 | Z-Image → `seed_explorer` |
 
@@ -60,7 +63,7 @@ Image Resizer (8199) ── 预处理参考图
 
 ## 工作流总览（17 个）
 
-### Z-Image Turbo（写实 / 照片级）— 15 个工作流
+### Z-Image Turbo（写实 / 照片级）— 16 个工作流
 
 #### 文生图
 
@@ -77,6 +80,7 @@ Image Resizer (8199) ── 预处理参考图
 | **Img2Img** | `zimage_turbo_img2img.json` | 参考图 + Prompt，denoise 控制变化幅度 | Y |
 | **Face Detailer** | `zimage_turbo_face_detailer.json` | 双通道：Img2Img → 面部检测精修 | Y |
 | **Max Pose** | `zimage_turbo_maxpose.json` | 参考图 + 文字描述新动作 | Y |
+| **Face + Body** | `zimage_turbo_face_body.json` | Mask锁脸 + 身体重绘（最稳保脸方案） | Y |
 | **Appearance + Pose** | `zimage_turbo_appearance_pose.json` | 双参考图风格/色调融合 | N |
 | **Multi-Fusion** | `zimage_turbo_multifusion.json` | 3 张图 latent 混合 | N |
 
@@ -102,7 +106,7 @@ Image Resizer (8199) ── 预处理参考图
 | **Storyboard** | `zimage_turbo_storyboard.json` | 一个主题 → 三幕故事板 |
 | **Inpainting** | `zimage_turbo_inpaint.json` | 图片 + 遮罩 → 局部重绘（实测中） |
 
-### Anima（二次元 / 动漫风格）— 2 个工作流
+### Anima（二次元 / 动漫风格）— 4 个工作流
 
 > 2B 参数动漫模型，基于 NVIDIA Cosmos-Predict2，circlestone-labs/Anima。
 > 专注动画/插画/艺术风格，**不支持写实/照片**。
@@ -112,6 +116,8 @@ Image Resizer (8199) ── 预处理参考图
 |--------|------|------|-----------|
 | **Anima Basic** | `anima_basic.json` | 文生图，Danbooru 标签格式 | 1024x1024 |
 | **Anima Img2Img** | `anima_img2img.json` | 参考图 + 文本引导 | 1024x1024 |
+| **Anima MaxPose** | `anima_maxpose.json` | 动漫角色图生图换姿态 | 1024x1024 |
+| **Anima Multi-Fusion** | `anima_multifusion.json` | 3图合成（角色A+B+场景互动） | 1024x1024 |
 
 **NEW:** 试试 [Anima Turbo LoRA](https://civitai.com/models/2560840/anima-turbo-lora) — 更快更稳，放 `ComfyUI/models/loras/` 即可。
 

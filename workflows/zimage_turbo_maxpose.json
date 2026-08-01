@@ -162,9 +162,9 @@
           ]
         }
       ],
-      "title": "Positive: Describe the NEW pose + scene + lighting",
+      "title": "Positive: NEW pose + scene | use (action:1.3) weighting for stubborn poses",
       "widgets_values": [
-        "lying sideways on bed, legs crossed, white stockings, warm light, silk sheets, full body"
+        "(lying sideways on bed:1.3), legs crossed, white stockings, (warm light:1.2), silk sheets, full body"
       ]
     },
     {
@@ -194,9 +194,9 @@
           ]
         }
       ],
-      "title": "Negative (different face, bad anatomy, quality, watermark)",
+      "title": "Negative (different face, bad anatomy, realism artifacts)",
       "widgets_values": [
-        "lowres, bad anatomy, bad hands, text, error, missing fingers, deformed, ugly, different face"
+        "lowres, bad anatomy, bad hands, text, error, missing fingers, extra digit, extra limbs, extra arms, mutated hands, cropped, worst quality, low quality, jpeg artifacts, signature, watermark, deformed, ugly, different face, distorted face"
       ]
     },
     {
@@ -241,15 +241,15 @@
           ]
         }
       ],
-      "title": "Sampler (denoise: 0.3=subtle, 0.6=dramatic pose change)",
+      "title": "Sampler (denoise: 0.35=keep face, 0.55=pose change | CFG 2 sweet spot)",
       "widgets_values": [
         123456789,
         "randomize",
         8,
-        5.0,
+        2.0,
         "euler",
         "beta",
-        0.75
+        0.5
       ]
     },
     {

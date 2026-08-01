@@ -5,6 +5,7 @@ title ComfyUI + Z-Image Turbo / Anima
 echo.
 echo ============================================================
 echo     ComfyUI + Z-Image Turbo / Anima
+echo     DanbooruSearch: https://huggingface.co/spaces/SAkizuki/DanbooruSearch
 echo ============================================================
 echo.
 
@@ -15,6 +16,10 @@ if not exist "%COMFYUI_DIR%\main.py" (
     pause
     exit /b 1
 )
+
+:: Open DanbooruSearch prompt helper
+echo [*] Opening DanbooruSearch prompt helper...
+start "" "https://huggingface.co/spaces/SAkizuki/DanbooruSearch"
 
 :: Fix OMP conflict
 set KMP_DUPLICATE_LIB_OK=TRUE
@@ -39,4 +44,5 @@ if %errorlevel% neq 0 (
     echo [!] ComfyUI failed (code: %errorlevel%)
     pause
 )
+
 

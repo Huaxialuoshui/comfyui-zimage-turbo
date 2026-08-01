@@ -1,0 +1,1575 @@
+{
+  "version": 0.4,
+  "last_node_id": 40,
+  "last_link_id": 55,
+  "nodes": [
+    {
+      "id": 1,
+      "type": "UNETLoader",
+      "pos": [
+        50,
+        50
+      ],
+      "size": [
+        315,
+        82
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "properties": {
+        "Node name for S&R": "UNETLoader"
+      },
+      "widgets_values": [
+        "z_image_turbo_bf16.safetensors",
+        "default"
+      ],
+      "outputs": [
+        {
+          "name": "MODEL",
+          "type": "MODEL",
+          "links": [
+            1,
+            2,
+            3
+          ],
+          "slot_index": 0
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "type": "CLIPLoader",
+      "pos": [
+        50,
+        160
+      ],
+      "size": [
+        315,
+        82
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "properties": {
+        "Node name for S&R": "CLIPLoader"
+      },
+      "widgets_values": [
+        "qwen_3_4b.safetensors",
+        "qwen_image"
+      ],
+      "outputs": [
+        {
+          "name": "CLIP",
+          "type": "CLIP",
+          "links": [
+            4,
+            5,
+            6,
+            7
+          ],
+          "slot_index": 0
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "type": "VAELoader",
+      "pos": [
+        50,
+        270
+      ],
+      "size": [
+        315,
+        58
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "properties": {
+        "Node name for S&R": "VAELoader"
+      },
+      "widgets_values": [
+        "ae.safetensors"
+      ],
+      "outputs": [
+        {
+          "name": "VAE",
+          "type": "VAE",
+          "links": [
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14
+          ],
+          "slot_index": 0
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "type": "LoadImage",
+      "pos": [
+        50,
+        380
+      ],
+      "size": [
+        315,
+        314
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "title": "Load moved.png: face at NEW position",
+      "widgets_values": [
+        "moved.png",
+        "image"
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            15,
+            16,
+            17,
+            18
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "LoadImage"
+      }
+    },
+    {
+      "id": 5,
+      "type": "LoadImage",
+      "pos": [
+        50,
+        730
+      ],
+      "size": [
+        315,
+        314
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "title": "Load face_body_mask.png: BLACK=locked face, WHITE=repaint",
+      "widgets_values": [
+        "face_body_mask.png",
+        "image"
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            19
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "LoadImage"
+      }
+    },
+    {
+      "id": 7,
+      "type": "ImageToMask",
+      "pos": [
+        420,
+        800
+      ],
+      "size": [
+        210,
+        46
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "widgets_values": [
+        "red"
+      ],
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 19
+        }
+      ],
+      "outputs": [
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": [
+            20
+          ],
+          "slot_index": 0
+        }
+      ]
+    },
+    {
+      "id": 8,
+      "type": "FeatherMask",
+      "pos": [
+        420,
+        880
+      ],
+      "size": [
+        210,
+        58
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "properties": {
+        "Node name for S&R": "FeatherMask"
+      },
+      "title": "Feather 25px",
+      "widgets_values": [
+        25,
+        25,
+        25,
+        25
+      ],
+      "inputs": [
+        {
+          "name": "mask",
+          "type": "MASK",
+          "link": 20
+        }
+      ],
+      "outputs": [
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": [
+            21,
+            22,
+            23
+          ],
+          "slot_index": 0
+        }
+      ]
+    },
+    {
+      "id": 9,
+      "type": "VAEEncode",
+      "pos": [
+        420,
+        420
+      ],
+      "size": [
+        250,
+        60
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "properties": {
+        "Node name for S&R": "VAEEncode"
+      },
+      "title": "Encode moved.png (shared)",
+      "inputs": [
+        {
+          "name": "pixels",
+          "type": "IMAGE",
+          "link": 15
+        },
+        {
+          "name": "vae",
+          "type": "VAE",
+          "link": 8
+        }
+      ],
+      "outputs": [
+        {
+          "name": "LATENT",
+          "type": "LATENT",
+          "links": [
+            24,
+            25,
+            26
+          ],
+          "slot_index": 0
+        }
+      ]
+    },
+    {
+      "id": 10,
+      "type": "CLIPTextEncode",
+      "pos": [
+        420,
+        50
+      ],
+      "size": [
+        480,
+        120
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "properties": {
+        "Node name for S&R": "CLIPTextEncode"
+      },
+      "title": "Negative: identity + anatomy + hair",
+      "widgets_values": [
+        "different person, identity mismatch, inconsistent face, different body proportions, different shoulder width, different clothing, asymmetrical body, front view when side view is requested, front view when back view is requested, extra limbs, extra fingers, malformed hands, deformed face, distorted head, duplicate person, cropped body, missing feet, hair, bangs, long hair, hair strands, text, logo, watermark, collage, split screen"
+      ],
+      "inputs": [
+        {
+          "name": "clip",
+          "type": "CLIP",
+          "link": 7
+        }
+      ],
+      "outputs": [
+        {
+          "name": "CONDITIONING",
+          "type": "CONDITIONING",
+          "links": [
+            27,
+            28,
+            29
+          ],
+          "slot_index": 0
+        }
+      ]
+    },
+    {
+      "id": 11,
+      "type": "SetLatentNoiseMask",
+      "pos": [
+        720,
+        420
+      ],
+      "size": [
+        315,
+        82
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "title": "Apply mask (front)",
+      "inputs": [
+        {
+          "name": "samples",
+          "type": "LATENT",
+          "link": 24
+        },
+        {
+          "name": "mask",
+          "type": "MASK",
+          "link": 21
+        }
+      ],
+      "outputs": [
+        {
+          "name": "LATENT",
+          "type": "LATENT",
+          "links": [
+            30
+          ],
+          "slot_index": 0
+        }
+      ]
+    },
+    {
+      "id": 12,
+      "type": "TextEncodeZImageOmni",
+      "pos": [
+        720,
+        50
+      ],
+      "size": [
+        480,
+        280
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "title": "Positive: FRONT VIEW",
+      "widgets_values": [
+        "full body character turnaround reference sheet, front view, same person as reference image, same facial structure, same body proportions, same shoulder width, same skin tone, same age appearance, standing naturally, arms relaxed at sides, clean studio background, soft even lighting, highly consistent anatomy, realistic proportions, shaved head, clean scalp, no visible hair, front-facing camera, symmetrical composition",
+        true
+      ],
+      "inputs": [
+        {
+          "name": "clip",
+          "type": "CLIP",
+          "link": 4
+        },
+        {
+          "name": "image1",
+          "type": "IMAGE",
+          "link": 16
+        },
+        {
+          "name": "image2",
+          "type": "IMAGE",
+          "link": 53
+        },
+        {
+          "name": "vae",
+          "type": "VAE",
+          "link": 9
+        }
+      ],
+      "outputs": [
+        {
+          "name": "CONDITIONING",
+          "type": "CONDITIONING",
+          "links": [
+            31
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "TextEncodeZImageOmni"
+      }
+    },
+    {
+      "id": 13,
+      "type": "KSampler",
+      "pos": [
+        1260,
+        50
+      ],
+      "size": [
+        315,
+        262
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "title": "Front (fixed seed | denoise 0.62 | steps 14 | CFG 3.5)",
+      "widgets_values": [
+        123456789,
+        "fixed",
+        14,
+        3.5,
+        "euler",
+        "beta",
+        0.62
+      ],
+      "inputs": [
+        {
+          "name": "model",
+          "type": "MODEL",
+          "link": 1
+        },
+        {
+          "name": "positive",
+          "type": "CONDITIONING",
+          "link": 31
+        },
+        {
+          "name": "negative",
+          "type": "CONDITIONING",
+          "link": 27
+        },
+        {
+          "name": "latent_image",
+          "type": "LATENT",
+          "link": 30
+        }
+      ],
+      "outputs": [
+        {
+          "name": "LATENT",
+          "type": "LATENT",
+          "links": [
+            32
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "KSampler"
+      }
+    },
+    {
+      "id": 14,
+      "type": "VAEDecode",
+      "pos": [
+        1620,
+        50
+      ],
+      "size": [
+        210,
+        46
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "properties": {
+        "Node name for S&R": "VAEDecode"
+      },
+      "inputs": [
+        {
+          "name": "samples",
+          "type": "LATENT",
+          "link": 32
+        },
+        {
+          "name": "vae",
+          "type": "VAE",
+          "link": 10
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            33,
+            34,
+            46
+          ],
+          "slot_index": 0
+        }
+      ]
+    },
+    {
+      "id": 15,
+      "type": "PreviewImage",
+      "pos": [
+        1620,
+        130
+      ],
+      "size": [
+        300,
+        300
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "title": "FRONT VIEW (hairless)",
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 33
+        }
+      ]
+    },
+    {
+      "id": 21,
+      "type": "SetLatentNoiseMask",
+      "pos": [
+        720,
+        540
+      ],
+      "size": [
+        315,
+        82
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "title": "Apply mask (side)",
+      "inputs": [
+        {
+          "name": "samples",
+          "type": "LATENT",
+          "link": 25
+        },
+        {
+          "name": "mask",
+          "type": "MASK",
+          "link": 22
+        }
+      ],
+      "outputs": [
+        {
+          "name": "LATENT",
+          "type": "LATENT",
+          "links": [
+            35
+          ],
+          "slot_index": 0
+        }
+      ]
+    },
+    {
+      "id": 22,
+      "type": "TextEncodeZImageOmni",
+      "pos": [
+        720,
+        310
+      ],
+      "size": [
+        480,
+        200
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "title": "Positive: SIDE VIEW",
+      "widgets_values": [
+        "full body character turnaround reference sheet, left side profile view, same person as reference image, preserve head size, facial bone structure, neck length, same body proportions, same shoulder width, same clothing, standing naturally, arms relaxed at sides, left-facing profile, ear visible, clean studio background, soft even lighting, highly consistent anatomy, realistic proportions, shaved head, clean scalp, no visible hair, orthographic character reference style",
+        true
+      ],
+      "inputs": [
+        {
+          "name": "clip",
+          "type": "CLIP",
+          "link": 5
+        },
+        {
+          "name": "image1",
+          "type": "IMAGE",
+          "link": 17
+        },
+        {
+          "name": "image2",
+          "type": "IMAGE",
+          "link": 54
+        },
+        {
+          "name": "vae",
+          "type": "VAE",
+          "link": 11
+        }
+      ],
+      "outputs": [
+        {
+          "name": "CONDITIONING",
+          "type": "CONDITIONING",
+          "links": [
+            36
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "TextEncodeZImageOmni"
+      }
+    },
+    {
+      "id": 23,
+      "type": "KSampler",
+      "pos": [
+        1260,
+        310
+      ],
+      "size": [
+        315,
+        262
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "title": "Side (fixed seed | denoise 0.68 | steps 14 | CFG 3.5)",
+      "widgets_values": [
+        123456789,
+        "fixed",
+        14,
+        3.5,
+        "euler",
+        "beta",
+        0.68
+      ],
+      "inputs": [
+        {
+          "name": "model",
+          "type": "MODEL",
+          "link": 2
+        },
+        {
+          "name": "positive",
+          "type": "CONDITIONING",
+          "link": 36
+        },
+        {
+          "name": "negative",
+          "type": "CONDITIONING",
+          "link": 28
+        },
+        {
+          "name": "latent_image",
+          "type": "LATENT",
+          "link": 35
+        }
+      ],
+      "outputs": [
+        {
+          "name": "LATENT",
+          "type": "LATENT",
+          "links": [
+            37
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "KSampler"
+      }
+    },
+    {
+      "id": 24,
+      "type": "VAEDecode",
+      "pos": [
+        1620,
+        310
+      ],
+      "size": [
+        210,
+        46
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "properties": {
+        "Node name for S&R": "VAEDecode"
+      },
+      "inputs": [
+        {
+          "name": "samples",
+          "type": "LATENT",
+          "link": 37
+        },
+        {
+          "name": "vae",
+          "type": "VAE",
+          "link": 12
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            38,
+            39,
+            47
+          ],
+          "slot_index": 0
+        }
+      ]
+    },
+    {
+      "id": 25,
+      "type": "PreviewImage",
+      "pos": [
+        1620,
+        390
+      ],
+      "size": [
+        300,
+        300
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "title": "SIDE VIEW (hairless)",
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 38
+        }
+      ]
+    },
+    {
+      "id": 31,
+      "type": "SetLatentNoiseMask",
+      "pos": [
+        720,
+        660
+      ],
+      "size": [
+        315,
+        82
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "title": "Apply mask (back)",
+      "inputs": [
+        {
+          "name": "samples",
+          "type": "LATENT",
+          "link": 26
+        },
+        {
+          "name": "mask",
+          "type": "MASK",
+          "link": 23
+        }
+      ],
+      "outputs": [
+        {
+          "name": "LATENT",
+          "type": "LATENT",
+          "links": [
+            40
+          ],
+          "slot_index": 0
+        }
+      ]
+    },
+    {
+      "id": 33,
+      "type": "TextEncodeZImageOmni",
+      "pos": [
+        720,
+        560
+      ],
+      "size": [
+        480,
+        100
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "title": "Positive: BACK VIEW",
+      "widgets_values": [
+        "full body character turnaround reference sheet, back view, same person as reference image, same height, same body proportions, same shoulder width, same clothing design, same fabric material, same head size and neck length, standing naturally, arms relaxed at sides, back-facing camera, rear view, clean studio background, soft even lighting, highly consistent anatomy, realistic proportions, shaved head, clean scalp, no visible hair, orthographic character reference style",
+        true
+      ],
+      "inputs": [
+        {
+          "name": "clip",
+          "type": "CLIP",
+          "link": 6
+        },
+        {
+          "name": "image1",
+          "type": "IMAGE",
+          "link": 18
+        },
+        {
+          "name": "image2",
+          "type": "IMAGE",
+          "link": 55
+        },
+        {
+          "name": "vae",
+          "type": "VAE",
+          "link": 14
+        }
+      ],
+      "outputs": [
+        {
+          "name": "CONDITIONING",
+          "type": "CONDITIONING",
+          "links": [
+            41
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "TextEncodeZImageOmni"
+      }
+    },
+    {
+      "id": 34,
+      "type": "KSampler",
+      "pos": [
+        1260,
+        570
+      ],
+      "size": [
+        315,
+        262
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "title": "Back (fixed seed | denoise 0.72 | steps 14 | CFG 3.5)",
+      "widgets_values": [
+        123456789,
+        "fixed",
+        14,
+        3.5,
+        "euler",
+        "beta",
+        0.72
+      ],
+      "inputs": [
+        {
+          "name": "model",
+          "type": "MODEL",
+          "link": 3
+        },
+        {
+          "name": "positive",
+          "type": "CONDITIONING",
+          "link": 41
+        },
+        {
+          "name": "negative",
+          "type": "CONDITIONING",
+          "link": 29
+        },
+        {
+          "name": "latent_image",
+          "type": "LATENT",
+          "link": 40
+        }
+      ],
+      "outputs": [
+        {
+          "name": "LATENT",
+          "type": "LATENT",
+          "links": [
+            42
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "KSampler"
+      }
+    },
+    {
+      "id": 35,
+      "type": "VAEDecode",
+      "pos": [
+        1620,
+        570
+      ],
+      "size": [
+        210,
+        46
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "properties": {
+        "Node name for S&R": "VAEDecode"
+      },
+      "inputs": [
+        {
+          "name": "samples",
+          "type": "LATENT",
+          "link": 42
+        },
+        {
+          "name": "vae",
+          "type": "VAE",
+          "link": 13
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            43,
+            44,
+            48
+          ],
+          "slot_index": 0
+        }
+      ]
+    },
+    {
+      "id": 36,
+      "type": "PreviewImage",
+      "pos": [
+        1620,
+        650
+      ],
+      "size": [
+        300,
+        300
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "title": "BACK VIEW (hairless)",
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 43
+        }
+      ]
+    },
+    {
+      "id": 37,
+      "type": "ZImageThreeViewComposite",
+      "pos": [
+        1620,
+        1000
+      ],
+      "size": [
+        360,
+        100
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image_front",
+          "type": "IMAGE",
+          "link": 34
+        },
+        {
+          "name": "image_side",
+          "type": "IMAGE",
+          "link": 39
+        },
+        {
+          "name": "image_back",
+          "type": "IMAGE",
+          "link": 44
+        }
+      ],
+      "outputs": [
+        {
+          "name": "composite",
+          "type": "IMAGE",
+          "links": [
+            45,
+            49
+          ],
+          "slot_index": 0
+        }
+      ]
+    },
+    {
+      "id": 38,
+      "type": "PreviewImage",
+      "pos": [
+        1620,
+        1140
+      ],
+      "size": [
+        500,
+        200
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "title": "THREE-VIEW COMPOSITE (hairless)",
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 45
+        }
+      ]
+    },
+    {
+      "id": 39,
+      "type": "ZImageSaveThreeView",
+      "pos": [
+        1800,
+        1000
+      ],
+      "size": [
+        450,
+        140
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "title": "Save all 4 images to file",
+      "widgets_values": [
+        "threeview_hairless"
+      ],
+      "inputs": [
+        {
+          "name": "image_front",
+          "type": "IMAGE",
+          "link": 46
+        },
+        {
+          "name": "image_side",
+          "type": "IMAGE",
+          "link": 47
+        },
+        {
+          "name": "image_back",
+          "type": "IMAGE",
+          "link": 48
+        },
+        {
+          "name": "image_composite",
+          "type": "IMAGE",
+          "link": 49
+        },
+        {
+          "name": "filename_prefix",
+          "type": "STRING",
+          "link": null
+        }
+      ],
+      "outputs": [],
+      "properties": {
+        "Node name for S&R": "ZImageSaveThreeView"
+      }
+    },
+    {
+      "id": 40,
+      "type": "LoadImage",
+      "pos": [
+        50,
+        1080
+      ],
+      "size": [
+        315,
+        314
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "title": "Load identity_reference.png (clear face, no mask)",
+      "widgets_values": [
+        "identity_reference.png",
+        "image"
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            53,
+            54,
+            55
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "LoadImage"
+      }
+    }
+  ],
+  "links": [
+    [
+      1,
+      1,
+      0,
+      13,
+      0,
+      "MODEL"
+    ],
+    [
+      2,
+      1,
+      0,
+      23,
+      0,
+      "MODEL"
+    ],
+    [
+      3,
+      1,
+      0,
+      34,
+      0,
+      "MODEL"
+    ],
+    [
+      4,
+      2,
+      0,
+      12,
+      0,
+      "CLIP"
+    ],
+    [
+      5,
+      2,
+      0,
+      22,
+      0,
+      "CLIP"
+    ],
+    [
+      6,
+      2,
+      0,
+      33,
+      0,
+      "CLIP"
+    ],
+    [
+      7,
+      2,
+      0,
+      10,
+      0,
+      "CLIP"
+    ],
+    [
+      8,
+      3,
+      0,
+      9,
+      1,
+      "VAE"
+    ],
+    [
+      9,
+      3,
+      0,
+      12,
+      3,
+      "VAE"
+    ],
+    [
+      10,
+      3,
+      0,
+      14,
+      1,
+      "VAE"
+    ],
+    [
+      11,
+      3,
+      0,
+      22,
+      3,
+      "VAE"
+    ],
+    [
+      12,
+      3,
+      0,
+      24,
+      1,
+      "VAE"
+    ],
+    [
+      13,
+      3,
+      0,
+      35,
+      1,
+      "VAE"
+    ],
+    [
+      14,
+      3,
+      0,
+      33,
+      3,
+      "VAE"
+    ],
+    [
+      15,
+      4,
+      0,
+      9,
+      0,
+      "IMAGE"
+    ],
+    [
+      16,
+      4,
+      0,
+      12,
+      1,
+      "IMAGE"
+    ],
+    [
+      17,
+      4,
+      0,
+      22,
+      1,
+      "IMAGE"
+    ],
+    [
+      18,
+      4,
+      0,
+      33,
+      1,
+      "IMAGE"
+    ],
+    [
+      19,
+      5,
+      0,
+      7,
+      0,
+      "IMAGE"
+    ],
+    [
+      20,
+      7,
+      0,
+      8,
+      0,
+      "MASK"
+    ],
+    [
+      21,
+      8,
+      0,
+      11,
+      1,
+      "MASK"
+    ],
+    [
+      22,
+      8,
+      0,
+      21,
+      1,
+      "MASK"
+    ],
+    [
+      23,
+      8,
+      0,
+      31,
+      1,
+      "MASK"
+    ],
+    [
+      24,
+      9,
+      0,
+      11,
+      0,
+      "LATENT"
+    ],
+    [
+      25,
+      9,
+      0,
+      21,
+      0,
+      "LATENT"
+    ],
+    [
+      26,
+      9,
+      0,
+      31,
+      0,
+      "LATENT"
+    ],
+    [
+      27,
+      10,
+      0,
+      13,
+      2,
+      "CONDITIONING"
+    ],
+    [
+      28,
+      10,
+      0,
+      23,
+      2,
+      "CONDITIONING"
+    ],
+    [
+      29,
+      10,
+      0,
+      34,
+      2,
+      "CONDITIONING"
+    ],
+    [
+      30,
+      11,
+      0,
+      13,
+      3,
+      "LATENT"
+    ],
+    [
+      31,
+      12,
+      0,
+      13,
+      1,
+      "CONDITIONING"
+    ],
+    [
+      32,
+      13,
+      0,
+      14,
+      0,
+      "LATENT"
+    ],
+    [
+      33,
+      14,
+      0,
+      15,
+      0,
+      "IMAGE"
+    ],
+    [
+      34,
+      14,
+      0,
+      37,
+      0,
+      "IMAGE"
+    ],
+    [
+      35,
+      21,
+      0,
+      23,
+      3,
+      "LATENT"
+    ],
+    [
+      36,
+      22,
+      0,
+      23,
+      1,
+      "CONDITIONING"
+    ],
+    [
+      37,
+      23,
+      0,
+      24,
+      0,
+      "LATENT"
+    ],
+    [
+      38,
+      24,
+      0,
+      25,
+      0,
+      "IMAGE"
+    ],
+    [
+      39,
+      24,
+      0,
+      37,
+      1,
+      "IMAGE"
+    ],
+    [
+      40,
+      31,
+      0,
+      34,
+      3,
+      "LATENT"
+    ],
+    [
+      41,
+      33,
+      0,
+      34,
+      1,
+      "CONDITIONING"
+    ],
+    [
+      42,
+      34,
+      0,
+      35,
+      0,
+      "LATENT"
+    ],
+    [
+      43,
+      35,
+      0,
+      36,
+      0,
+      "IMAGE"
+    ],
+    [
+      44,
+      35,
+      0,
+      37,
+      2,
+      "IMAGE"
+    ],
+    [
+      45,
+      37,
+      0,
+      38,
+      0,
+      "IMAGE"
+    ],
+    [
+      46,
+      14,
+      0,
+      39,
+      0,
+      "IMAGE"
+    ],
+    [
+      47,
+      24,
+      0,
+      39,
+      1,
+      "IMAGE"
+    ],
+    [
+      48,
+      35,
+      0,
+      39,
+      2,
+      "IMAGE"
+    ],
+    [
+      49,
+      37,
+      0,
+      39,
+      3,
+      "IMAGE"
+    ],
+    [
+      53,
+      40,
+      0,
+      12,
+      2,
+      "IMAGE"
+    ],
+    [
+      54,
+      40,
+      0,
+      22,
+      2,
+      "IMAGE"
+    ],
+    [
+      55,
+      40,
+      0,
+      33,
+      2,
+      "IMAGE"
+    ]
+  ],
+  "groups": [],
+  "config": {},
+  "extra": {
+    "workflow": {
+      "name": "Z-Image ThreeView Hairless v2"
+    }
+  }
+}

@@ -205,7 +205,7 @@
           "slot_index": 0
         }
       ],
-      "title": "Stage 1: Positive (new scene, face from ref)",
+      "title": "Stage 1: Positive (new scene + keep face | (pose:1.3) to guide)",
       "widgets_values": [
         "medium full shot, young woman side lying on white bed, sheer white stockings, warm golden backlight, photorealistic, soft lighting"
       ]
@@ -241,9 +241,9 @@
           "slot_index": 0
         }
       ],
-      "title": "Negative (all stages)",
+      "title": "Negative (bad anatomy, face distortion, quality)",
       "widgets_values": [
-        "lowres, bad anatomy, bad hands, text, missing fingers, extra limbs, watermark, blurry, distorted face"
+        "lowres, bad anatomy, bad hands, text, missing fingers, extra limbs, watermark, blurry, distorted face, deformed, ugly, different face, worst quality, low quality"
       ]
     },
     {
@@ -292,12 +292,12 @@
           "slot_index": 0
         }
       ],
-      "title": "Stage 1: Img2Img (denoise 0.5 = keep face + new scene)",
+      "title": "Stage 1: Img2Img (denoise 0.50 keep face | CFG 2.0)",
       "widgets_values": [
         123456789,
         "fixed",
         8,
-        1.0,
+        2.0,
         "euler",
         "beta",
         0.5
@@ -410,7 +410,7 @@
           "slot_index": 0
         }
       ],
-      "title": "Stage 2: Positive (face detail focus)",
+      "title": "Stage 2: Positive (face detail focus | (sharp eyes:1.4) (skin detail:1.3))",
       "widgets_values": [
         "sharp facial features, clear eyes, smooth skin texture, detailed hair, photorealistic portrait quality, 8K detail"
       ]
@@ -461,12 +461,12 @@
           "slot_index": 0
         }
       ],
-      "title": "Stage 2: Detail refine (denoise 0.25 = enhance, keep structure)",
+      "title": "Stage 2: Detail refine (denoise 0.25 enhance | CFG 2.0)",
       "widgets_values": [
         123456789,
         "fixed",
         4,
-        1.0,
+        2.0,
         "euler",
         "simple",
         0.25

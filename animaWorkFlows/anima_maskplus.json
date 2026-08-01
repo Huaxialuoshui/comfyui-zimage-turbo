@@ -1,0 +1,1160 @@
+{
+  "version": 0.4,
+  "last_node_id": 29,
+  "last_link_id": 35,
+  "nodes": [
+    {
+      "id": 1,
+      "type": "UNETLoader",
+      "pos": [
+        50,
+        50
+      ],
+      "size": [
+        315,
+        82
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "outputs": [
+        {
+          "name": "MODEL",
+          "type": "MODEL",
+          "links": [
+            1,
+            32
+          ],
+          "slot_index": 0
+        }
+      ],
+      "widgets_values": [
+        "anima-base-v1.0.safetensors",
+        "default"
+      ],
+      "properties": {
+        "Node name for S&R": "UNETLoader"
+      },
+      "title": "UNET (Anima Base)"
+    },
+    {
+      "id": 2,
+      "type": "CLIPLoader",
+      "pos": [
+        50,
+        160
+      ],
+      "size": [
+        315,
+        82
+      ],
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "outputs": [
+        {
+          "name": "CLIP",
+          "type": "CLIP",
+          "links": [
+            2,
+            3
+          ],
+          "slot_index": 0
+        }
+      ],
+      "widgets_values": [
+        "qwen_3_06b_base.safetensors",
+        "qwen_image"
+      ],
+      "properties": {
+        "Node name for S&R": "CLIPLoader"
+      },
+      "title": "CLIP (Qwen 0.6B - Anima)"
+    },
+    {
+      "id": 3,
+      "type": "VAELoader",
+      "pos": [
+        50,
+        270
+      ],
+      "size": [
+        315,
+        58
+      ],
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "outputs": [
+        {
+          "name": "VAE",
+          "type": "VAE",
+          "links": [
+            4,
+            5
+          ],
+          "slot_index": 0
+        }
+      ],
+      "widgets_values": [
+        "qwen_image_vae.safetensors"
+      ],
+      "properties": {
+        "Node name for S&R": "VAELoader"
+      },
+      "title": "VAE (Qwen Image VAE)"
+    },
+    {
+      "id": 4,
+      "type": "LoadImage",
+      "pos": [
+        50,
+        380
+      ],
+      "size": [
+        315,
+        314
+      ],
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            6
+          ],
+          "slot_index": 0
+        }
+      ],
+      "title": "Load moved.png: face at NEW position (from MaskPlus Export)",
+      "widgets_values": [
+        "moved.png",
+        "image"
+      ],
+      "properties": {
+        "Node name for S&R": "LoadImage"
+      }
+    },
+    {
+      "id": 5,
+      "type": "LoadImage",
+      "pos": [
+        50,
+        730
+      ],
+      "size": [
+        315,
+        314
+      ],
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            7
+          ],
+          "slot_index": 0
+        }
+      ],
+      "title": "Load face_body_mask.png: BLACK=locked face (new pos), WHITE=repaint body",
+      "widgets_values": [
+        "face_body_mask.png",
+        "image"
+      ],
+      "properties": {
+        "Node name for S&R": "LoadImage"
+      }
+    },
+    {
+      "id": 6,
+      "type": "ImageToMask",
+      "pos": [
+        430,
+        800
+      ],
+      "size": [
+        210,
+        46
+      ],
+      "flags": {},
+      "order": 5,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 7
+        }
+      ],
+      "outputs": [
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": [
+            8
+          ],
+          "slot_index": 0
+        }
+      ],
+      "widgets_values": [
+        "red"
+      ]
+    },
+    {
+      "id": 7,
+      "type": "FeatherMask",
+      "pos": [
+        430,
+        880
+      ],
+      "size": [
+        210,
+        58
+      ],
+      "flags": {},
+      "order": 6,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "mask",
+          "type": "MASK",
+          "link": 8
+        }
+      ],
+      "outputs": [
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": [
+            9
+          ],
+          "slot_index": 0
+        }
+      ],
+      "title": "Feather 25px",
+      "widgets_values": [
+        25,
+        25,
+        25,
+        25
+      ]
+    },
+    {
+      "id": 8,
+      "type": "VAEEncode",
+      "pos": [
+        430,
+        420
+      ],
+      "size": [
+        250,
+        60
+      ],
+      "flags": {},
+      "order": 7,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "pixels",
+          "type": "IMAGE",
+          "link": 6
+        },
+        {
+          "name": "vae",
+          "type": "VAE",
+          "link": 4
+        }
+      ],
+      "outputs": [
+        {
+          "name": "LATENT",
+          "type": "LATENT",
+          "links": [
+            10
+          ],
+          "slot_index": 0
+        }
+      ],
+      "title": "Encode photo to latent"
+    },
+    {
+      "id": 9,
+      "type": "CLIPTextEncode",
+      "pos": [
+        430,
+        50
+      ],
+      "size": [
+        400,
+        140
+      ],
+      "flags": {},
+      "order": 8,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "clip",
+          "type": "CLIP",
+          "link": 2
+        }
+      ],
+      "outputs": [
+        {
+          "name": "CONDITIONING",
+          "type": "CONDITIONING",
+          "links": [
+            12,
+            33
+          ],
+          "slot_index": 0
+        }
+      ],
+      "title": "Positive: Danbooru tags - new body pose + outfit",
+      "widgets_values": [
+        "1girl, full body, standing, casual clothes, soft shading, detailed background, masterpiece, best quality"
+      ]
+    },
+    {
+      "id": 10,
+      "type": "CLIPTextEncode",
+      "pos": [
+        430,
+        220
+      ],
+      "size": [
+        400,
+        100
+      ],
+      "flags": {},
+      "order": 9,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "clip",
+          "type": "CLIP",
+          "link": 3
+        }
+      ],
+      "outputs": [
+        {
+          "name": "CONDITIONING",
+          "type": "CONDITIONING",
+          "links": [
+            13,
+            34
+          ],
+          "slot_index": 0
+        }
+      ],
+      "title": "Negative: seam, skin mismatch, bad anatomy, realism",
+      "widgets_values": [
+        "lowres, bad anatomy, bad hands, extra fingers, mutated hands, poorly drawn hands, extra limbs, seam, harsh edge, visible seam, skin mismatch, realistic, photorealistic, 3d"
+      ]
+    },
+    {
+      "id": 11,
+      "type": "KSampler",
+      "pos": [
+        750,
+        50
+      ],
+      "size": [
+        315,
+        220
+      ],
+      "flags": {},
+      "order": 10,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model",
+          "type": "MODEL",
+          "link": 1
+        },
+        {
+          "name": "positive",
+          "type": "CONDITIONING",
+          "link": 12
+        },
+        {
+          "name": "negative",
+          "type": "CONDITIONING",
+          "link": 13
+        },
+        {
+          "name": "latent_image",
+          "type": "LATENT",
+          "link": 11
+        }
+      ],
+      "outputs": [
+        {
+          "name": "LATENT",
+          "type": "LATENT",
+          "links": [
+            14
+          ],
+          "slot_index": 0
+        }
+      ],
+      "title": "Pass 1: Generate (seed=-1 | 35 steps | denoise 0.80 | CFG 4.5)",
+      "widgets_values": [
+        -1,
+        "randomize",
+        35,
+        4.5,
+        "er_sde",
+        "normal",
+        0.8
+      ]
+    },
+    {
+      "id": 12,
+      "type": "VAEDecode",
+      "pos": [
+        1120,
+        50
+      ],
+      "size": [
+        210,
+        46
+      ],
+      "flags": {},
+      "order": 11,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "samples",
+          "type": "LATENT",
+          "link": 14
+        },
+        {
+          "name": "vae",
+          "type": "VAE",
+          "link": 5
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            35
+          ],
+          "slot_index": 0
+        }
+      ]
+    },
+    {
+      "id": 13,
+      "type": "PreviewImage",
+      "pos": [
+        1120,
+        130
+      ],
+      "size": [
+        350,
+        400
+      ],
+      "flags": {},
+      "order": 12,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 23
+        }
+      ],
+      "outputs": [],
+      "title": "Pass 1: Initial Generation"
+    },
+    {
+      "id": 19,
+      "type": "SetLatentNoiseMask",
+      "pos": [
+        620,
+        420
+      ],
+      "size": [
+        315,
+        82
+      ],
+      "flags": {},
+      "order": 7,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "samples",
+          "type": "LATENT",
+          "link": 10
+        },
+        {
+          "name": "mask",
+          "type": "MASK",
+          "link": 9
+        }
+      ],
+      "outputs": [
+        {
+          "name": "LATENT",
+          "type": "LATENT",
+          "links": [
+            11
+          ],
+          "slot_index": 0
+        }
+      ],
+      "title": "Apply mask to noise (white=denoise, black=keep original)"
+    },
+    {
+      "id": 20,
+      "type": "LoadImage",
+      "pos": [
+        850,
+        380
+      ],
+      "size": [
+        315,
+        314
+      ],
+      "flags": {},
+      "order": 14,
+      "mode": 0,
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            20
+          ],
+          "slot_index": 0
+        }
+      ],
+      "title": "Load face_mask.png: WHITE face on BLACK (pixel-perfect blend)",
+      "widgets_values": [
+        "face_mask.png",
+        "image"
+      ],
+      "properties": {
+        "Node name for S&R": "LoadImage"
+      }
+    },
+    {
+      "id": 21,
+      "type": "ImageToMask",
+      "pos": [
+        1220,
+        430
+      ],
+      "size": [
+        200,
+        40
+      ],
+      "flags": {},
+      "order": 15,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 20
+        }
+      ],
+      "outputs": [
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": [
+            21,
+            30
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ImageToMask"
+      }
+    },
+    {
+      "id": 22,
+      "type": "FeatherMask",
+      "pos": [
+        1220,
+        500
+      ],
+      "size": [
+        200,
+        60
+      ],
+      "flags": {},
+      "order": 16,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "mask",
+          "type": "MASK",
+          "link": 21
+        }
+      ],
+      "outputs": [
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": [
+            22
+          ],
+          "slot_index": 0
+        }
+      ],
+      "title": "Feather 15px",
+      "widgets_values": [
+        15,
+        15,
+        15,
+        15
+      ],
+      "properties": {
+        "Node name for S&R": "FeatherMask"
+      }
+    },
+    {
+      "id": 23,
+      "type": "ImageCompositeMasked",
+      "pos": [
+        1220,
+        600
+      ],
+      "size": [
+        240,
+        80
+      ],
+      "flags": {},
+      "order": 17,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "destination",
+          "type": "IMAGE",
+          "link": 35
+        },
+        {
+          "name": "source",
+          "type": "IMAGE",
+          "link": 6
+        },
+        {
+          "name": "mask",
+          "type": "MASK",
+          "link": 22
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            23
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ImageCompositeMasked"
+      }
+    },
+    {
+      "id": 24,
+      "type": "VAEEncode",
+      "pos": [
+        850,
+        600
+      ],
+      "size": [
+        200,
+        40
+      ],
+      "flags": {},
+      "order": 18,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "pixels",
+          "type": "IMAGE",
+          "link": 24
+        },
+        {
+          "name": "vae",
+          "type": "VAE",
+          "link": 5
+        }
+      ],
+      "outputs": [
+        {
+          "name": "LATENT",
+          "type": "LATENT",
+          "links": [
+            25
+          ],
+          "slot_index": 0
+        }
+      ],
+      "title": "Encode Pass 1 for refinement",
+      "properties": {
+        "Node name for S&R": "VAEEncode"
+      }
+    },
+    {
+      "id": 25,
+      "type": "FeatherMask",
+      "pos": [
+        850,
+        670
+      ],
+      "size": [
+        200,
+        60
+      ],
+      "flags": {},
+      "order": 19,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "mask",
+          "type": "MASK",
+          "link": 30
+        }
+      ],
+      "outputs": [
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": [
+            31
+          ],
+          "slot_index": 0
+        }
+      ],
+      "title": "Feather 12px (pass 2)",
+      "widgets_values": [
+        12,
+        12,
+        12,
+        12
+      ],
+      "properties": {
+        "Node name for S&R": "FeatherMask"
+      }
+    },
+    {
+      "id": 26,
+      "type": "SetLatentNoiseMask",
+      "pos": [
+        850,
+        750
+      ],
+      "size": [
+        200,
+        40
+      ],
+      "flags": {},
+      "order": 20,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "samples",
+          "type": "LATENT",
+          "link": 25
+        },
+        {
+          "name": "mask",
+          "type": "MASK",
+          "link": 31
+        }
+      ],
+      "outputs": [
+        {
+          "name": "LATENT",
+          "type": "LATENT",
+          "links": [
+            27
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "SetLatentNoiseMask"
+      }
+    },
+    {
+      "id": 27,
+      "type": "KSampler",
+      "pos": [
+        1100,
+        600
+      ],
+      "size": [
+        300,
+        220
+      ],
+      "flags": {},
+      "order": 21,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model",
+          "type": "MODEL",
+          "link": 32
+        },
+        {
+          "name": "positive",
+          "type": "CONDITIONING",
+          "link": 33
+        },
+        {
+          "name": "negative",
+          "type": "CONDITIONING",
+          "link": 34
+        },
+        {
+          "name": "latent_image",
+          "type": "LATENT",
+          "link": 27
+        }
+      ],
+      "outputs": [
+        {
+          "name": "LATENT",
+          "type": "LATENT",
+          "links": [
+            28
+          ],
+          "slot_index": 0
+        }
+      ],
+      "title": "Pass 2: Refine (seed=-1 | 20 steps er_sde | denoise 0.35 | CFG 3.5)",
+      "widgets_values": [
+        -1,
+        "randomize",
+        20,
+        3.5,
+        "er_sde",
+        "normal",
+        0.35
+      ],
+      "properties": {
+        "Node name for S&R": "KSampler"
+      }
+    },
+    {
+      "id": 28,
+      "type": "VAEDecode",
+      "pos": [
+        1450,
+        650
+      ],
+      "size": [
+        200,
+        40
+      ],
+      "flags": {},
+      "order": 22,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "samples",
+          "type": "LATENT",
+          "link": 28
+        },
+        {
+          "name": "vae",
+          "type": "VAE",
+          "link": 5
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            29
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "VAEDecode"
+      }
+    },
+    {
+      "id": 29,
+      "type": "PreviewImage",
+      "pos": [
+        1700,
+        650
+      ],
+      "size": [
+        260,
+        240
+      ],
+      "flags": {},
+      "order": 23,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 29
+        }
+      ],
+      "title": "Pass 2: Refined (denoise 0.35)",
+      "properties": {
+        "Node name for S&R": "PreviewImage"
+      }
+    }
+  ],
+  "links": [
+    [
+      1,
+      1,
+      0,
+      19,
+      0,
+      "MODEL"
+    ],
+    [
+      2,
+      2,
+      0,
+      9,
+      0,
+      "CLIP"
+    ],
+    [
+      3,
+      2,
+      0,
+      10,
+      0,
+      "CLIP"
+    ],
+    [
+      4,
+      3,
+      0,
+      8,
+      1,
+      "VAE"
+    ],
+    [
+      5,
+      3,
+      0,
+      12,
+      1,
+      "VAE"
+    ],
+    [
+      6,
+      4,
+      0,
+      8,
+      0,
+      "IMAGE"
+    ],
+    [
+      7,
+      5,
+      0,
+      6,
+      0,
+      "IMAGE"
+    ],
+    [
+      8,
+      6,
+      0,
+      7,
+      0,
+      "MASK"
+    ],
+    [
+      9,
+      7,
+      0,
+      19,
+      1,
+      "MASK"
+    ],
+    [
+      10,
+      8,
+      0,
+      19,
+      0,
+      "LATENT"
+    ],
+    [
+      11,
+      19,
+      0,
+      11,
+      3,
+      "LATENT"
+    ],
+    [
+      12,
+      9,
+      0,
+      11,
+      1,
+      "CONDITIONING"
+    ],
+    [
+      13,
+      10,
+      0,
+      11,
+      2,
+      "CONDITIONING"
+    ],
+    [
+      14,
+      11,
+      0,
+      12,
+      0,
+      "LATENT"
+    ],
+    [
+      20,
+      20,
+      0,
+      21,
+      0,
+      "IMAGE"
+    ],
+    [
+      21,
+      21,
+      0,
+      22,
+      0,
+      "MASK"
+    ],
+    [
+      22,
+      22,
+      0,
+      23,
+      2,
+      "MASK"
+    ],
+    [
+      23,
+      23,
+      0,
+      13,
+      0,
+      "IMAGE"
+    ],
+    [
+      24,
+      12,
+      0,
+      24,
+      0,
+      "IMAGE"
+    ],
+    [
+      25,
+      24,
+      0,
+      26,
+      0,
+      "LATENT"
+    ],
+    [
+      27,
+      26,
+      0,
+      27,
+      3,
+      "LATENT"
+    ],
+    [
+      28,
+      27,
+      0,
+      28,
+      0,
+      "LATENT"
+    ],
+    [
+      29,
+      28,
+      0,
+      29,
+      0,
+      "IMAGE"
+    ],
+    [
+      30,
+      21,
+      0,
+      25,
+      0,
+      "MASK"
+    ],
+    [
+      31,
+      25,
+      0,
+      26,
+      1,
+      "MASK"
+    ],
+    [
+      32,
+      1,
+      0,
+      27,
+      0,
+      "MODEL"
+    ],
+    [
+      33,
+      9,
+      0,
+      27,
+      1,
+      "CONDITIONING"
+    ],
+    [
+      34,
+      10,
+      0,
+      27,
+      2,
+      "CONDITIONING"
+    ],
+    [
+      35,
+      12,
+      0,
+      23,
+      0,
+      "IMAGE"
+    ]
+  ],
+  "groups": [],
+  "config": {},
+  "extra": {
+    "description": "Anima MaskPlus Two-Pass - Pass 1 gen + Pass 2 refine"
+  }
+}

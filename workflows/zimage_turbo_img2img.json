@@ -205,7 +205,7 @@
           "slot_index": 0
         }
       ],
-      "title": "Positive (denoise<0.5: describe only mood/lighting | denoise>0.55: describe NEW pose too)",
+      "title": "Positive: new scene/lighting/mood | (action:1.3) to force pose",
       "widgets_values": [
         "medium full shot, young woman side lying on white bed, head on pillow, face clearly visible, legs gently bent, sheer white stockings, warm golden backlight, photorealistic, soft lighting"
       ],
@@ -246,7 +246,7 @@
       ],
       "title": "Negative (anatomy, extra limbs, face distortion, quality)",
       "widgets_values": [
-        "lowres, bad anatomy, bad hands, text, error, missing fingers"
+        "lowres, bad anatomy, bad hands, text, error, missing fingers, extra digit, fewer digits, extra arms, extra hands, three arms, three hands, mutated hands, poorly drawn hands, cropped, worst quality, low quality, jpeg artifacts, signature, watermark, blurry, deformed, ugly, extra limbs, different face, distorted face"
       ],
       "properties": {
         "Node name for S&R": "CLIPTextEncode"
@@ -350,15 +350,15 @@
         123456789,
         "fixed",
         8,
-        1.0,
+        2.0,
         "euler",
         "beta",
-        0.55
+        0.45
       ],
       "properties": {
         "Node name for S&R": "KSampler"
       },
-      "title": "Sampler (denoise: 0.35=keep pose+face, 0.50=moderate, 0.70=free pose change)"
+      "title": "Sampler (denoise: 0.25=keep face, 0.45=moderate, 0.70=pose change | CFG 2 sweet spot)"
     },
     {
       "id": 8,

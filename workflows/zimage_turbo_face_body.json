@@ -1,7 +1,7 @@
 {
   "version": 0.4,
-  "last_node_id": 15,
-  "last_link_id": 16,
+  "last_node_id": 19,
+  "last_link_id": 15,
   "nodes": [
     {
       "id": 1,
@@ -124,7 +124,7 @@
           "slot_index": 0
         }
       ],
-      "title": "Load Image (image to inpaint)",
+      "title": "Load Photo: YOUR image (face=LOCKED, body=repaint)",
       "widgets_values": [
         "input.png",
         "image"
@@ -157,7 +157,7 @@
           "slot_index": 0
         }
       ],
-      "title": "Load Mask (white=repaint, black=keep)",
+      "title": "Load Mask: WHITE=repaint area, BLACK=locked face",
       "widgets_values": [
         "mask.png",
         "image"
@@ -232,15 +232,15 @@
           "slot_index": 0
         }
       ],
-      "title": "Feather mask edges",
+      "title": "Feather edges 40px (larger = smoother face-body transition)",
       "widgets_values": [
-        15,
-        15
+        40,
+        40
       ]
     },
     {
       "id": 8,
-      "type": "VAEEncodeForInpaint",
+      "type": "VAEEncode",
       "pos": [
         430,
         420
@@ -262,11 +262,6 @@
           "name": "vae",
           "type": "VAE",
           "link": 4
-        },
-        {
-          "name": "mask",
-          "type": "MASK",
-          "link": 9
         }
       ],
       "outputs": [
@@ -279,10 +274,7 @@
           "slot_index": 0
         }
       ],
-      "title": "Encode image + mask (EXPERIMENTAL for Z-Image)",
-      "widgets_values": [
-        8
-      ]
+      "title": "Encode photo to latent"
     },
     {
       "id": 9,
@@ -310,14 +302,14 @@
           "name": "CONDITIONING",
           "type": "CONDITIONING",
           "links": [
-            11
+            12
           ],
           "slot_index": 0
         }
       ],
-      "title": "Positive (describe what to inpaint)",
+      "title": "Positive: body pose + matching skin tone + seamless blending",
       "widgets_values": [
-        "close-up face, detailed facial features, sharp eyes, smooth skin, photorealistic portrait"
+        "(standing pose:1.5), natural skin texture, matching skin tone, seamless full body, elegant dress, golden hour lighting, photorealistic, coherent lighting"
       ]
     },
     {
@@ -346,14 +338,14 @@
           "name": "CONDITIONING",
           "type": "CONDITIONING",
           "links": [
-            12
+            13
           ],
           "slot_index": 0
         }
       ],
-      "title": "Negative Prompt",
+      "title": "Negative (seam/edge artifacts, skin mismatch, anatomy)",
       "widgets_values": [
-        "different face, distorted face, bad anatomy, blurry, watermark, low quality, worst quality, seam, mask artifact"
+        "skin color mismatch, patchy skin, visible seam, harsh edge, mask artifact, different face, distorted face, bad anatomy, bad hands, extra limbs, deformed, ugly, lowres, blurry, watermark"
       ]
     },
     {
@@ -379,17 +371,17 @@
         {
           "name": "positive",
           "type": "CONDITIONING",
-          "link": 11
+          "link": 12
         },
         {
           "name": "negative",
           "type": "CONDITIONING",
-          "link": 12
+          "link": 13
         },
         {
           "name": "latent_image",
           "type": "LATENT",
-          "link": 10
+          "link": 11
         }
       ],
       "outputs": [
@@ -397,20 +389,20 @@
           "name": "LATENT",
           "type": "LATENT",
           "links": [
-            13
+            14
           ],
           "slot_index": 0
         }
       ],
-      "title": "Sampler (denoise 0.4-0.6 | CFG 2.0)",
+      "title": "Sampler (random seed | denoise 0.75 | CFG 3.0 | 12 steps)",
       "widgets_values": [
-        123456789,
-        "fixed",
-        8,
-        2.0,
+        0,
+        "randomize",
+        12,
+        3.0,
         "euler",
         "beta",
-        0.5
+        0.75
       ]
     },
     {
@@ -431,7 +423,7 @@
         {
           "name": "samples",
           "type": "LATENT",
-          "link": 13
+          "link": 14
         },
         {
           "name": "vae",
@@ -444,7 +436,7 @@
           "name": "IMAGE",
           "type": "IMAGE",
           "links": [
-            14
+            15
           ],
           "slot_index": 0
         }
@@ -468,11 +460,49 @@
         {
           "name": "images",
           "type": "IMAGE",
-          "link": 14
+          "link": 15
         }
       ],
       "outputs": [],
-      "title": "Inpainted Output"
+      "title": "Output: Face LOCKED at original position | For face repositioning, use maxpose/img2img instead"
+    },
+    {
+      "id": 19,
+      "type": "SetLatentNoiseMask",
+      "pos": [
+        620,
+        420
+      ],
+      "size": [
+        315,
+        82
+      ],
+      "flags": {},
+      "order": 7,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "samples",
+          "type": "LATENT",
+          "link": 10
+        },
+        {
+          "name": "mask",
+          "type": "MASK",
+          "link": 9
+        }
+      ],
+      "outputs": [
+        {
+          "name": "LATENT",
+          "type": "LATENT",
+          "links": [
+            11
+          ],
+          "slot_index": 0
+        }
+      ],
+      "title": "Apply mask to noise (white=denoise, black=keep original)"
     }
   ],
   "links": [
@@ -480,7 +510,7 @@
       1,
       1,
       0,
-      11,
+      19,
       0,
       "MODEL"
     ],
@@ -544,20 +574,28 @@
       9,
       7,
       0,
-      8,
-      2,
+      19,
+      1,
       "MASK"
     ],
     [
       10,
       8,
       0,
+      19,
+      0,
+      "LATENT"
+    ],
+    [
+      11,
+      19,
+      0,
       11,
       3,
       "LATENT"
     ],
     [
-      11,
+      12,
       9,
       0,
       11,
@@ -565,7 +603,7 @@
       "CONDITIONING"
     ],
     [
-      12,
+      13,
       10,
       0,
       11,
@@ -573,7 +611,7 @@
       "CONDITIONING"
     ],
     [
-      13,
+      14,
       11,
       0,
       12,
@@ -581,7 +619,7 @@
       "LATENT"
     ],
     [
-      14,
+      15,
       12,
       0,
       13,

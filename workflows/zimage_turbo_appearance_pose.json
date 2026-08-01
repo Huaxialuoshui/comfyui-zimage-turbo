@@ -124,7 +124,7 @@
           "slot_index": 0
         }
       ],
-      "title": "Image1: Style ref (painting/photo for COLOR & MOOD only)",
+      "title": "Image A: FACE reference (YOUR photo for identity/style)",
       "widgets_values": [
         "appearance.png",
         "image"
@@ -157,7 +157,7 @@
           "slot_index": 0
         }
       ],
-      "title": "Image2: Composition ref (pose/framing) | Leave EMPTY = text-only",
+      "title": "Image B: POSE reference (photo for pose/composition) | Leave EMPTY = text-only",
       "widgets_values": [
         "pose.png",
         "image"
@@ -212,7 +212,7 @@
           "slot_index": 0
         }
       ],
-      "title": "Positive: NEW subject + scene (NOT the ref content; face will be different)",
+      "title": "Positive: Describe the scene | face from A, pose from B, text fills gaps",
       "widgets_values": [
         "medium full shot, a young woman side lying on a white bed, head resting on a soft pillow, face clearly visible, ultra-thin sheer white stockings hugging legs, legs naturally bent and overlapping, one hand gently lifting stocking edge near upper thigh, warm golden side backlight, photorealistic skin texture, soft bedroom lighting, shallow depth of field",
         true
@@ -344,11 +344,12 @@
         123456789,
         "fixed",
         20,
-        1.5,
+        2.0,
         "euler",
         "beta",
         1.0
-      ]
+      ],
+      "title": "Sampler (denoise 1.0=T2I fusion mode | CFG 2.0)"
     },
     {
       "id": 10,
