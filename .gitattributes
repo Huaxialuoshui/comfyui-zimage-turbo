@@ -1,0 +1,14 @@
+# 本文件自身保持 LF
+.gitattributes text eol=lf
+
+# 批处理脚本必须使用 CRLF 换行。
+# cmd.exe 按字节偏移逐行读取 .bat，若为 LF 且文件含中文（UTF-8 多字节），
+# 解析位置会错位，表现为提示文字乱码或 "xxx is not recognized as an internal command"。
+*.bat text eol=crlf
+*.cmd text eol=crlf
+
+# 其余文本文件统一 LF
+*.py   text eol=lf
+*.md   text eol=lf
+*.txt  text eol=lf
+*.json text eol=lf
