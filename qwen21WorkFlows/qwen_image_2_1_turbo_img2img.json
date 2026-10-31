@@ -1,0 +1,274 @@
+{
+  "last_node_id": 12,
+  "last_link_id": 13,
+  "nodes": [
+    {
+      "id": 1,
+      "type": "UNETLoader",
+      "pos": [40, 40],
+      "size": [420, 82],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [
+        {"name": "unet_name", "type": "COMBO", "widget": {"name": "unet_name"}, "link": null},
+        {"name": "weight_dtype", "type": "COMBO", "widget": {"name": "weight_dtype"}, "link": null}
+      ],
+      "outputs": [{"name": "MODEL", "type": "MODEL", "links": [1]}],
+      "properties": {"Node name for S&R": "UNETLoader"},
+      "widgets_values": ["qwen_image_2.1_turbo_int8_convrot.safetensors", "default"]
+    },
+    {
+      "id": 2,
+      "type": "CLIPLoader",
+      "pos": [40, 150],
+      "size": [420, 106],
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "inputs": [
+        {"name": "clip_name", "type": "COMBO", "widget": {"name": "clip_name"}, "link": null},
+        {"name": "type", "type": "COMBO", "widget": {"name": "type"}, "link": null},
+        {"name": "device", "type": "COMBO", "widget": {"name": "device"}, "link": null}
+      ],
+      "outputs": [{"name": "CLIP", "type": "CLIP", "links": [2]}],
+      "properties": {"Node name for S&R": "CLIPLoader"},
+      "widgets_values": ["qwen3vl_8b_w4a8.safetensors", "qwen_image", "default"]
+    },
+    {
+      "id": 3,
+      "type": "VAELoader",
+      "pos": [40, 285],
+      "size": [420, 58],
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "inputs": [
+        {"name": "vae_name", "type": "COMBO", "widget": {"name": "vae_name"}, "link": null}
+      ],
+      "outputs": [{"name": "VAE", "type": "VAE", "links": [3, 11]}],
+      "properties": {"Node name for S&R": "VAELoader"},
+      "widgets_values": ["qwen_image_2.1_vae_bf16.safetensors"]
+    },
+    {
+      "id": 4,
+      "type": "QwenImage21Cache",
+      "pos": [500, 40],
+      "size": [420, 106],
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "inputs": [
+        {"name": "model", "type": "MODEL", "link": 1},
+        {"name": "device", "type": "COMBO", "widget": {"name": "device"}, "link": null},
+        {"name": "dtype", "type": "COMBO", "widget": {"name": "dtype"}, "link": null}
+      ],
+      "outputs": [{"name": "MODEL", "type": "MODEL", "links": [4]}],
+      "properties": {"Node name for S&R": "QwenImage21Cache"},
+      "widgets_values": ["auto", "default"]
+    },
+    {
+      "id": 5,
+      "type": "TextEncodeQwenImage21",
+      "title": "Positive: describe the result you want to keep or change",
+      "pos": [500, 180],
+      "size": [500, 190],
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "inputs": [
+        {"name": "clip", "type": "CLIP", "link": 2},
+        {"name": "prompt", "type": "STRING", "widget": {"name": "prompt"}, "link": null},
+        {"name": "negative_prompt", "type": "STRING", "widget": {"name": "negative_prompt"}, "link": null},
+        {"name": "resolution", "type": "INT", "widget": {"name": "resolution"}, "link": null}
+      ],
+      "outputs": [
+        {"name": "positive", "type": "CONDITIONING", "links": [5]},
+        {"name": "negative", "type": "CONDITIONING", "links": [6]},
+        {"name": "latent", "type": "LATENT", "links": []}
+      ],
+      "properties": {"Node name for S&R": "TextEncodeQwenImage21"},
+      "widgets_values": [
+        "medium full shot, young woman in a sunlit white studio, soft window light, subtle film grain, clean background, photorealistic, preserve the original pose and composition",
+        "lowres, bad anatomy, bad hands, extra limbs, distorted face, blurry, watermark, text, jpeg artifacts",
+        1024
+      ]
+    },
+    {
+      "id": 6,
+      "type": "LoadImage",
+      "title": "Input image: load YOUR source image",
+      "pos": [40, 390],
+      "size": [420, 480],
+      "flags": {},
+      "order": 5,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {"name": "IMAGE", "type": "IMAGE", "links": [7]},
+        {"name": "MASK", "type": "MASK", "links": null}
+      ],
+      "properties": {"Node name for S&R": "LoadImage"},
+      "widgets_values": ["example.png", "image"]
+    },
+    {
+      "id": 7,
+      "type": "ImageScaleToTotalPixels",
+      "title": "Equal aspect-ratio resize | 0.25 MP default for 8 GB VRAM",
+      "pos": [500, 420],
+      "size": [420, 106],
+      "flags": {},
+      "order": 6,
+      "mode": 0,
+      "inputs": [
+        {"name": "image", "type": "IMAGE", "link": 7},
+        {"name": "upscale_method", "type": "COMBO", "widget": {"name": "upscale_method"}, "link": null},
+        {"name": "megapixels", "type": "FLOAT", "widget": {"name": "megapixels"}, "link": null},
+        {"name": "resolution_steps", "type": "INT", "widget": {"name": "resolution_steps"}, "link": null}
+      ],
+      "outputs": [{"name": "IMAGE", "type": "IMAGE", "links": [8]}],
+      "properties": {"Node name for S&R": "ImageScaleToTotalPixels"},
+      "widgets_values": ["area", 0.25, 32]
+    },
+    {
+      "id": 8,
+      "type": "VAEEncode",
+      "pos": [500, 570],
+      "size": [420, 58],
+      "flags": {},
+      "order": 7,
+      "mode": 0,
+      "inputs": [
+        {"name": "pixels", "type": "IMAGE", "link": 8},
+        {"name": "vae", "type": "VAE", "link": 3}
+      ],
+      "outputs": [{"name": "LATENT", "type": "LATENT", "links": [9]}],
+      "properties": {"Node name for S&R": "VAEEncode"},
+      "widgets_values": []
+    },
+    {
+      "id": 9,
+      "type": "KSampler",
+      "title": "Qwen 2.1 Turbo img2img | denoise 0.35 keep / 0.55 balanced / 0.75 strong change",
+      "pos": [1040, 40],
+      "size": [420, 262],
+      "flags": {},
+      "order": 8,
+      "mode": 0,
+      "inputs": [
+        {"name": "model", "type": "MODEL", "link": 4},
+        {"name": "positive", "type": "CONDITIONING", "link": 5},
+        {"name": "negative", "type": "CONDITIONING", "link": 6},
+        {"name": "latent_image", "type": "LATENT", "link": 9},
+        {"name": "seed", "type": "INT", "widget": {"name": "seed"}, "link": null},
+        {"name": "control_after_generate", "type": "COMBO", "widget": {"name": "control_after_generate"}, "link": null},
+        {"name": "steps", "type": "INT", "widget": {"name": "steps"}, "link": null},
+        {"name": "cfg", "type": "FLOAT", "widget": {"name": "cfg"}, "link": null},
+        {"name": "sampler_name", "type": "COMBO", "widget": {"name": "sampler_name"}, "link": null},
+        {"name": "scheduler", "type": "COMBO", "widget": {"name": "scheduler"}, "link": null},
+        {"name": "denoise", "type": "FLOAT", "widget": {"name": "denoise"}, "link": null}
+      ],
+      "outputs": [{"name": "LATENT", "type": "LATENT", "links": [10]}],
+      "properties": {"Node name for S&R": "KSampler"},
+      "widgets_values": [24681357, "randomize", 8, 1.0, "euler", "simple", 0.55]
+    },
+    {
+      "id": 10,
+      "type": "VAEDecode",
+      "pos": [1500, 40],
+      "size": [240, 46],
+      "flags": {},
+      "order": 9,
+      "mode": 0,
+      "inputs": [
+        {"name": "samples", "type": "LATENT", "link": 10},
+        {"name": "vae", "type": "VAE", "link": 11}
+      ],
+      "outputs": [{"name": "IMAGE", "type": "IMAGE", "links": [12, 13]}],
+      "properties": {"Node name for S&R": "VAEDecode"},
+      "widgets_values": []
+    },
+    {
+      "id": 11,
+      "type": "PreviewImage",
+      "pos": [1790, 40],
+      "size": [320, 350],
+      "flags": {},
+      "order": 10,
+      "mode": 0,
+      "inputs": [{"name": "images", "type": "IMAGE", "link": 12}],
+      "outputs": [],
+      "properties": {"Node name for S&R": "PreviewImage"},
+      "widgets_values": []
+    },
+    {
+      "id": 12,
+      "type": "SaveImage",
+      "pos": [1790, 420],
+      "size": [420, 400],
+      "flags": {},
+      "order": 11,
+      "mode": 0,
+      "inputs": [{"name": "images", "type": "IMAGE", "link": 13}],
+      "outputs": [],
+      "properties": {"Node name for S&R": "SaveImage"},
+      "widgets_values": ["qwen21_img2img"]
+    }
+  ],
+  "links": [
+    [1, 1, 0, 4, 0, "MODEL"],
+    [2, 2, 0, 5, 0, "CLIP"],
+    [3, 3, 0, 8, 1, "VAE"],
+    [4, 4, 0, 9, 0, "MODEL"],
+    [5, 5, 0, 9, 1, "CONDITIONING"],
+    [6, 5, 1, 9, 2, "CONDITIONING"],
+    [7, 6, 0, 7, 0, "IMAGE"],
+    [8, 7, 0, 8, 0, "IMAGE"],
+    [9, 8, 0, 9, 3, "LATENT"],
+    [10, 9, 0, 10, 0, "LATENT"],
+    [11, 3, 0, 10, 1, "VAE"],
+    [12, 10, 0, 11, 0, "IMAGE"],
+    [13, 10, 0, 12, 0, "IMAGE"]
+  ],
+  "groups": [
+    {
+      "id": 1,
+      "title": "Models | Qwen-Image 2.1 Turbo",
+      "bounding": [20, 0, 920, 380],
+      "color": "#3f789e",
+      "font_size": 24,
+      "flags": {}
+    },
+    {
+      "id": 2,
+      "title": "Input image -> latent",
+      "bounding": [20, 370, 920, 530],
+      "color": "#88a",
+      "font_size": 24,
+      "flags": {}
+    },
+    {
+      "id": 3,
+      "title": "Sampling | euler / simple / 8 steps / CFG 1",
+      "bounding": [1020, 0, 460, 360],
+      "color": "#8a6",
+      "font_size": 24,
+      "flags": {}
+    },
+    {
+      "id": 4,
+      "title": "Preview and save",
+      "bounding": [1480, 0, 760, 850],
+      "color": "#a86",
+      "font_size": 24,
+      "flags": {}
+    }
+  ],
+  "config": {},
+  "extra": {
+    "workflow": {
+      "name": "Qwen-Image 2.1 Turbo Img2Img | latent img2img | denoise 0.55 | 8 GB VRAM"
+    }
+  },
+  "version": 0.4
+}

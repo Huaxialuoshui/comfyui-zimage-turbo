@@ -360,10 +360,24 @@ comfyui:
     clip_vision: models/clip_vision/
     configs: models/configs/
     controlnet: models/controlnet/
+    diffusion_models: models/diffusion_models/
     embeddings: models/embeddings/
     loras: models/loras/
+    model_patches: models/model_patches/
+    style_models: models/style_models/
+    text_encoders: models/text_encoders/
+    unet: models/unet/
     upscale_models: models/upscale_models/
     vae: models/vae/
+    vae_approx: models/vae_approx/
+    audio_encoders: models/audio_encoders/
+    background_removal: models/background_removal/
+    detection: models/detection/
+    diffusers: models/diffusers/
+    frame_interpolation: models/frame_interpolation/
+    geometry_estimation: models/geometry_estimation/
+    latent_upscale_models: models/latent_upscale_models/
+    optical_flow: models/optical_flow/
 """
     
     config_path.write_text(config_content, encoding="utf-8")

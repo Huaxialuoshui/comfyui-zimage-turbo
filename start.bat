@@ -1,21 +1,24 @@
 @echo off
 chcp 65001 >nul
-title ComfyUI + Z-Image Turbo / Anima
+title ComfyUI + Z-Image / Anima / SeFi / H3 / Qwen-Image 2.1
 
 echo.
 echo ============================================================
-echo     ComfyUI + Z-Image Turbo / Anima
+echo     ComfyUI + Z-Image / Anima / SeFi / H3 / Qwen-Image 2.1
 echo     DanbooruSearch: https://huggingface.co/spaces/SAkizuki/DanbooruSearch
 echo ============================================================
 echo.
 
 set COMFYUI_DIR=%~dp0ComfyUI
+set COMFYUI_PYTHON=%COMFYUI_DIR%\.venv\Scripts\python.exe
 
 if not exist "%COMFYUI_DIR%\main.py" (
     echo [!] ComfyUI not found! Run setup.bat first.
     pause
     exit /b 1
 )
+
+if not exist "%COMFYUI_PYTHON%" set COMFYUI_PYTHON=python
 
 :: Open DanbooruSearch prompt helper
 echo [*] Opening DanbooruSearch prompt helper...
@@ -37,7 +40,7 @@ echo [*] Image Resizer: http://127.0.0.1:8199
 echo.
 
 cd /d "%COMFYUI_DIR%"
-python main.py --listen 127.0.0.1 --port 8188
+"%COMFYUI_PYTHON%" main.py --listen 127.0.0.1 --port 8188
 
 if %errorlevel% neq 0 (
     echo.

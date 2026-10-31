@@ -11,6 +11,8 @@
 
 所有版本共用 nvfp4 编码器（14.6GB）+ int8 生成 tail（7.1GB，仅 break 版需要）。
 
+`optional/04_全能参考_Ref2VA` 额外依赖 `diffusion_models/minimax_h3_ref2va_pruned_int8_convrot.safetensors`（19.5GB）。该模型未安装时这 8 个工作流会提示找不到模型，因此已从默认分类移到 optional；其它 H3 分类不需要这个文件。
+
 ## 目录
 
 | 文件夹 | 用途 | 文件 |
@@ -18,7 +20,7 @@
 | `01_文生视频_t2v` | 纯文字生成视频+音频 | minimax_h3_t2v（含 EasyCache 优化版） |
 | `02_图生视频_i2v` | 首帧图/尾帧图生成视频+音频 | minimax_h3_i2v（含 EasyCache 优化版） |
 | `03_Turbo快速` | 4~8 步快速出片（Turbo LoRA） | MiniMax H3 turbo / MiniMax_H3_turbo_EasyCache_opt |
-| `04_全能参考` | T2VA + Ref2VA 多分支参考工作流 | AllRef / MiniMax H3 全能参考工作流 |
+| `optional/04_全能参考_Ref2VA` | T2VA + Ref2VA 多分支参考工作流 | AllRef / MiniMax H3 全能参考工作流 |
 | `05_Work-Fisher整合` | i2v + Reference-to-Video 整合流程 | Work-Fisher / 【Work-Fisher】整合流程 |
 | `06_破限增强` | 提示词增强专用（GenerationTail + PromptEnhancer） | video_minimax_h3_i2v_uncensored_enhancer |
 

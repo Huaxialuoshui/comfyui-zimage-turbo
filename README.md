@@ -1,15 +1,17 @@
-# ComfyUI + Z-Image Turbo / Anima / SeFi / MiniMax H3 本地 AI 创作整合包 (v4)
+# ComfyUI + Qwen-Image 2.1 / Z-Image / Anima / SeFi / MiniMax H3 本地 AI 创作整合包 (v5.1)
 
-> **开箱即用的本地图像 + 视频生成工作站**：四套模型引擎、78 个中文工作流，装完即用，不需要命令行基础。
+> **开箱即用的本地图像 + 视频生成工作站**：五套模型引擎、66 个默认工作流 + 9 个可选工作流，共用同一个 ComfyUI 入口。
 >
-> 🖼️ 写实 **Z-Image Turbo** · 🎨 二次元 **Anima** · ⚡ 5B Turbo **SeFi** · 🎬 全模态视频 **MiniMax H3**（自带原生双声道音频）
+> **2026-10-31 更新**：新增 Qwen-Image 2.1 潜空间图生图、统一虚拟环境启动、模型引用审计和可选工作流目录管理。
+>
+> 🧠 **Qwen-Image 2.1** · 🖼️ 写实 **Z-Image Turbo** · 🎨 二次元 **Anima** · ⚡ 5B Turbo **SeFi** · 🎬 全模态视频 **MiniMax H3**
 
 **三步上手**
 
 ```
 1. setup.bat     → 自动安装 ComfyUI + Z-Image Turbo 模型（首次必跑）
 2. start.bat     → 启动 ComfyUI (8188) + 图片对齐工具 (8199)
-3. 打开 http://127.0.0.1:8188 → 拖入 workflows/ 里的 JSON → Queue Prompt
+3. 打开 http://127.0.0.1:8188 → 拖入对应引擎目录里的 JSON → Queue Prompt
 ```
 
 ---
@@ -24,6 +26,7 @@
 | `anima_setup.bat` | Anima 二次元引擎（UNET + CLIP + VAE） | ~5.2 GB | 可选 |
 | `sefi_setup.bat` | SeFi-5B-Turbo 引擎 + `ComfyUI_Rebels_SeFi` 节点 | ~17 GB | 可选 |
 | `minimax_h3_setup.bat` | MiniMax H3 全模态视频模型（魔搭源，加 `--ref2va` 再下 20 GB） | ~42.5 GB | 可选 |
+| `scripts/qwen21/download_models.ps1` | Qwen-Image 2.1 Turbo INT8 + Qwen3-VL 8B 文本编码器 + VAE | ~13.3 GB | 可选 |
 | `download_face_detector.bat` | MediaPipe 人脸关键点模型（Face Detailer 用） | 3.6 MB | 可选 |
 | `download_qwen_models.bat` | 补齐 Qwen3-0.6B / Qwen2-VL-2B / Qwen3-VL-4B | ~13 GB | 可选 |
 | `qwen3vl_download.bat` | Qwen3-VL-2B（替换旧的 Qwen2-VL-2B 提示词链路） | ~4 GB | 可选 |
@@ -52,22 +55,23 @@
 | Python | 3.10+（本包在 Python 3.13 实测） |
 | 显卡 | NVIDIA，8 GB 显存起步；MiniMax H3 建议 24 GB 或开启 CPU offload |
 | 内存 | 建议 32 GB+ |
-| 硬盘 | 建议 80 GB+（四引擎全装约 85 GB） |
+| 硬盘 | 建议 100 GB+（五引擎基础约 98 GB，完整 LLM/H3 资料库当前约 200 GB） |
 | 页面文件 | **必须 ≥ 32 GB**（系统属性 → 高级 → 性能 → 虚拟内存），否则易在换模型时崩 |
-| 运行时 | ComfyUI 0.31.0 · PyTorch 2.11 + CUDA 13（`setup.bat` 会给出安装指引） |
+| 运行时 | ComfyUI 0.42.0 · PyTorch 2.11 + CUDA 13 · Python 3.13（项目内 `.venv`） |
 
 ---
 
-## 四大引擎
+## 五大引擎
 
 | 引擎 | 风格 | 默认分辨率 | 采样 | 最适合 |
 |------|------|-----------|------|--------|
+| **Qwen-Image 2.1** | 通用写实 / 图像编辑 | 512×512 低显存；1024×1024 高质量 | 8 步 Turbo | 中英文提示词、文字排版、参考图编辑与风格迁移 |
 | **Z-Image Turbo** | 写实 / 照片级 | 1024×1024 | 8 步 beta | 人像、光影、产品图、摄影氛围 |
 | **Anima** | 二次元 / 动漫 | 1024×1024 | 35 步 er_sde | 动漫角色、Danbooru 标签、插画风 |
 | **SeFi-5B-Turbo** | 通用 Turbo | 1024×1024 | Turbo 少步数 | 快速草稿与风格探索的备选链路 |
 | **MiniMax H3** | 全模态视频 | 768P / 24 fps | Turbo LoRA 4~8 步 | 文生视频、首尾帧生视频，**原生双声道音频** |
 
-四套引擎共用同一个 ComfyUI，工作流按目录分开存放，随时切换互不影响。
+五套引擎共用 `ComfyUI/`、模型目录与 8188 端口，工作流按引擎分目录存放，不再需要独立启动第二个 ComfyUI。
 
 ---
 
@@ -75,6 +79,10 @@
 
 | 你想做什么 | 推荐入口 |
 |-----------|---------|
+| Qwen 文生图 / 中英文字排版 | Qwen-Image 2.1 → `qwen21WorkFlows/qwen_image_2_1_turbo_lowvram` |
+| 用 Qwen 模板得到更高画质 | Qwen-Image 2.1 → `qwen_image_2_1_turbo_t2i` |
+| Qwen 图生图（保构图 / 改风格） | Qwen-Image 2.1 → `qwen_image_2_1_turbo_img2img` |
+| Qwen 参考图编辑 / 按指令改内容 | Qwen-Image 2.1 → `qwen_image_2_1_turbo_image_edit` |
 | 写实照片级 AI 图像 | Z-Image → `zimage_turbo_basic` / `zimage_turbo_long_prompt` |
 | 短关键词自动扩写出图 | Z-Image → `zimage_turbo_qwenvl` |
 | 二次元动漫风格 | Anima → `anima_basic` |
@@ -93,11 +101,34 @@
 | 文生视频（带声音） | MiniMax H3 → `01_文生视频_t2v` |
 | 首帧/首尾帧生视频 | MiniMax H3 → `02_图生视频_i2v` |
 | 4~8 步快速出片 | MiniMax H3 → `03_Turbo快速` |
-| 参考图/视频/音频生成 | MiniMax H3 → `04_全能参考`（需另下 `--ref2va` 模型） |
+| 参考图/视频/音频生成 | MiniMax H3 → `optional/04_全能参考_Ref2VA`（需另下 `--ref2va` 模型） |
 
 ---
 
-## 工作流总览（共 78 个）
+## 工作流总览（66 个默认 + 9 个可选）
+
+> 历史备份单独保留，不计入默认或可选工作流数量。当前另有 24 个历史备份 JSON。
+
+### Qwen-Image 2.1（4 个，`qwen21WorkFlows/`）
+
+| 工作流 | 文件 | 说明 |
+|--------|------|------|
+| **Low VRAM** | `qwen_image_2_1_turbo_lowvram.json` | 8 GB 显存安全入口，512×512、8 步，适合首次验证 |
+| **Text to Image** | `qwen_image_2_1_turbo_t2i.json` | 官方新版模板，分辨率选择器和高质量输出 |
+| **Image Edit** | `qwen_image_2_1_turbo_image_edit.json` | 参考图编辑、主体保持与风格变换 |
+| **Img2Img** | `qwen_image_2_1_turbo_img2img.json` | 潜空间图生图，denoise 控制保留构图与变化幅度 |
+
+模型由 `scripts/qwen21/download_models.ps1` 下载到主 `ComfyUI/models/`。命令行文生图可运行 `scripts/qwen21/generate.ps1`；图生图可运行 `scripts/qwen21/generate_img2img.ps1`，默认连接 8188。
+
+### 模型引用自检
+
+```powershell
+python scripts/audit_workflow_models.py
+```
+
+脚本会逐个读取正式工作流，检查模型文件名和节点类型。`workflows/backup/`、`h3WorkFlows/_backup_fix/`、`h3WorkFlows/optional/` 和 `animaWorkFlows/optional/` 是历史或高级可选工作流，默认不纳入开箱即用检查。
+
+需要把可选工作流也列出来时，运行 `python scripts/audit_workflow_models.py --include-optional`。
 
 ### Z-Image Turbo（19 个，`workflows/`）
 
@@ -147,7 +178,7 @@
 
 > 历史版本保留在 `workflows/backup/v1`、`workflows/backup/v2`，需要回滚时复制回 `workflows/` 覆盖即可。
 
-### Anima（7 个，`animaWorkFlows/`）
+### Anima（6 个默认 + 1 个可选，`animaWorkFlows/`）
 
 > 2B 参数动漫模型，基于 NVIDIA Cosmos-Predict2，`circlestone-labs/Anima`。
 > 专注动画 / 插画 / 艺术风格，**不支持写实照片**。
@@ -160,7 +191,7 @@
 | **Anima Multi-Fusion** | `anima_multifusion.json` | 3 图合成（角色 A + 角色 B + 场景互动） |
 | **Anima Face + Body** | `anima_face_body.json` | Mask 锁脸 + 身体重绘，羽化 40px 过渡 |
 | **Anima MaskPlus** | `anima_maskplus.json` | 换脸位两段式流程（同 Z-Image MaskPlus 逻辑，35 步 er_sde） |
-| **Anima 全家桶总控 V3** | `Anima-全家桶总控-V3-直连.json` | 7 条模型流同屏对比（miaomiao12 / miaomiaoBase / anima_baseV10 / oneObsessionAnima_v30 / anima-aesthetic-v1.1 / animayume_v05 / anima2.9）+ LORA 总控 + 对比图合并；**需额外安装 `ComfyUI-Lora-Manager` 节点** |
+| **Anima 全家桶总控 V3** | `optional/Anima-全家桶总控-V3-直连.json` | 7 条模型流同屏对比 + LoRA 总控；**可选**，需要额外的 7 个底模和 LoRA，说明见 `animaWorkFlows/optional/README.md` |
 
 **试试 Anima Turbo LoRA**（更快更稳）：下载后放 `ComfyUI/models/loras/` 即可。
 
@@ -176,7 +207,7 @@
 | **SeFi Face + Body** | `sefi_face_body.json` | 锁脸换身体 |
 | **SeFi Seed Explorer** | `sefi_seed_explorer.json` | 批量种子探索 |
 
-### MiniMax H3 全模态视频（48 个，`h3WorkFlows/`）
+### MiniMax H3 全模态视频（33 个默认 + 8 个可选，`h3WorkFlows/`）
 
 首个开源的全模态视频模型：文本 / 图像 / 视频 / 音频任意组合输入，一次生成带**原生双声道音频**的 768P 视频（24 fps，4~15 秒）。
 
@@ -185,11 +216,11 @@
 | `01_文生视频_t2v` | 纯文字生成视频 + 音频（含 EasyCache 优化版） | 8 |
 | `02_图生视频_i2v` | 首帧图 / 尾帧图生成视频 + 音频 | 8 |
 | `03_Turbo快速` | turbo LoRA 少步数出片 | 8 |
-| `04_全能参考` | T2VA + Ref2VA 多分支参考工作流 | 8 |
+| `optional/04_全能参考_Ref2VA` | T2VA + Ref2VA 多分支参考工作流（需另下 Ref2VA） | 8 |
 | `05_Work-Fisher整合` | 图生视频 + 参考生视频整合流程 | 8 |
 | `06_破限增强` | 提示词增强专用（GenerationTail + PromptEnhancer） | 1 |
 | `00_参考资料` | 官方提示词写作指南 + 中文反推指令包 | 3 |
-| `_backup_fix` | 修复前的原始备份 | 7 |
+| `_backup_fix` | 修复前的原始备份（不计入默认/可选数量） | 7 |
 
 **文件名后缀含义**
 
@@ -220,6 +251,9 @@
 | Z-Image Turbo | 文本编码器 | `text_encoders/qwen_3_4b.safetensors` | 7.5 GB |
 | Z-Image Turbo | VAE | `vae/ae.safetensors` | 0.3 GB |
 | Z-Image Turbo | 低显存替代 | `diffusion_models/split_files/diffusion_models/z_image_turbo_nvfp4.safetensors` | 4.2 GB |
+| Qwen-Image 2.1 | 扩散模型（INT8 Turbo） | `diffusion_models/qwen_image_2.1_turbo_int8_convrot.safetensors` | 6.8 GB |
+| Qwen-Image 2.1 | 文本编码器（W4A8） | `text_encoders/qwen3vl_8b_w4a8.safetensors` | 5.9 GB |
+| Qwen-Image 2.1 | VAE | `vae/qwen_image_2.1_vae_bf16.safetensors` | 0.63 GB |
 | Anima | 扩散模型 | `diffusion_models/anima-base-v1.0.safetensors` | 3.9 GB |
 | Anima | 文本编码器 | `text_encoders/qwen_3_06b_base.safetensors` | 1.1 GB |
 | Anima | VAE | `vae/qwen_image_vae.safetensors` | 0.24 GB |
@@ -267,6 +301,7 @@
 | ComfyUI-Impact-Pack | Face Detailer 面部检测精修 |
 | ComfyUI-KJNodes / rgthree-comfy / ComfyUI-VideoHelperSuite | 通用工具、视频合成与预览 |
 | ComfyUI-GGUF / ComfyUI_UniBlockSwap / ComfyUI-ReservedVRAM | 量化加载、显存调度 |
+| ComfyUI-Lora-Manager / ComfyUI_Comfyroll_CustomNodes / Comfyui-Memory_Cleanup | Anima 高级工作流的 LoRA、文本与内存节点 |
 | ComfyUI-MiniMax-H3-Guide / -Turbo-2 / minimax-h3-audio-T8 | MiniMax H3 视频与音频链路 |
 
 ---
@@ -470,17 +505,27 @@ comfyui-zimage-package/
 │   ├── install_minimax_h3.py   # H3 模型下载（魔搭 / 断点续传）
 │   ├── monitor_h3_videos.py    # H3 出片自动保存助手
 │   ├── storyboard.py           # 10 阶段故事板批量生成
-│   └── qwenvl_image_variation.py # QwenVL 图像变体生成
+│   ├── qwenvl_image_variation.py # QwenVL 图像变体生成
+│   ├── audit_workflow_models.py # 工作流模型/节点引用审计
+│   ├── download_model_segmented.py # 大模型分段并发下载
+│   ├── repair_qwen21_local_models.py # 修复 Qwen 编码器引用
+│   └── qwen21/
+│       ├── download_models.ps1     # Qwen-Image 2.1 三件套模型下载
+│       ├── generate.ps1            # Qwen-Image 2.1 文生图
+│       └── generate_img2img.ps1    # Qwen-Image 2.1 图生图
 │
 ├── workflows/                  # Z-Image Turbo 19 个工作流
 │   └── backup/v1/ v2/          # 历史版本
-├── animaWorkFlows/             # Anima 7 个工作流
+├── animaWorkFlows/             # Anima 6 个默认 + 1 个可选
 ├── sefiWorkFlows/              # SeFi 4 个工作流
-├── h3WorkFlows/                # MiniMax H3 48 个工作流 + 参考资料
+├── h3WorkFlows/                # MiniMax H3 33 个默认 + 8 个可选
+├── qwen21WorkFlows/            # Qwen-Image 2.1 4 个工作流
 │
-├── ComfyUI/                    # 引擎本体（setup.bat 安装，不进 Git）
+├── ComfyUI/                    # 唯一引擎本体（0.42.0，不进 Git）
+│   ├── .venv/                  # 共用 Python 环境
 │   ├── models/{diffusion_models,text_encoders,vae,loras,LLM/Qwen-VL,detection}
-│   └── custom_nodes/           # Manager / QwenVL / SeFi / threeview / H3 等
+│   ├── custom_nodes/           # Manager / QwenVL / SeFi / threeview / H3 等
+│   └── output/                 # 各引擎共用输出目录
 │
 ├── outputs/                    # 生成结果（不进 Git）
 └── output_resized/ tmp_resizer/ # 对齐工具输出与缓存（不进 Git）
@@ -490,7 +535,38 @@ comfyui-zimage-package/
 
 ## 更新日志
 
-**v4**（当前）
+**v5.1 — 2026-10-16 至 2026-10-31（当前）**
+
+本轮更新把 10 月下旬的本地修改统一整理进主仓库：
+
+**Qwen-Image 2.1**
+
+- 接入 Qwen-Image 2.1 Turbo INT8，并复用现有 `qwen3vl_8b_w4a8` 文本编码器与 2.1 VAE。
+- 新增 `qwen21WorkFlows/`：低显存文生图、官方高画质 T2I、参考图编辑和潜空间 Img2Img 共 4 个工作流。
+- 新增 `generate.ps1`、`generate_img2img.ps1` 和模型下载脚本；图生图支持 denoise、像素预算、步数、CFG、种子与缓存精度参数。
+- 新增 `repair_qwen21_local_models.py`，自动把官方模板缺失的编码器引用改成本机 W4A8 文件。
+
+**启动与模型工具**
+
+- `start.bat` 优先使用项目内 `ComfyUI/.venv`，找不到时回退到系统 Python。
+- `scripts/install.py` 补齐 diffusion、text encoder、VAE、controlnet、detection、diffusers 等完整模型目录映射。
+- 新增大模型分段并发下载器 `scripts/download_model_segmented.py`，适用于 H3 Ref2VA 等超大文件。
+- 新增 `scripts/audit_workflow_models.py`，默认检查正式工作流，可选纳入 backup 与 optional。
+- ComfyUI 统一升级到 0.42.0，删除独立 `ComfyUI-qwen21` 运行目录与 8189 端口。
+
+**工作流整理**
+
+- Qwen、Z-Image、Anima、SeFi、MiniMax H3 共用 `ComfyUI/`、模型、节点、虚拟环境和输出目录。
+- MiniMax H3 Ref2VA 的 8 个工作流移入 `h3WorkFlows/optional/04_全能参考_Ref2VA/`，避免未安装 19.5 GB 额外模型时误报。
+- Anima 全家桶总控 V3 移入 `animaWorkFlows/optional/`，明确其额外底模与 LoRA 依赖。
+- 工作流计数改为 66 个默认 + 9 个可选，历史备份不再混入默认清单。
+
+**v5 — 2026-10-26**
+
+- 完成 Qwen-Image 2.1 初版接入与统一 ComfyUI 运行环境
+- 将各引擎模型、节点和输出目录合并到同一个工作区
+
+**v4**
 
 - 新增 MiniMax H3 全模态视频引擎：文生视频 / 首尾帧 / 参考生成，自带双声道音频，48 个工作流分 6 类
 - 新增 SeFi-5B-Turbo 引擎与安装脚本（含 `ComfyUI_Rebels_SeFi` 节点）
